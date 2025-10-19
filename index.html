@@ -10,116 +10,138 @@
     input, select, textarea { width: 100%; padding: 8px; margin-top: 5px; }
     button { margin-top: 20px; padding: 10px 20px; }
     #output { white-space: pre-wrap; background: #fff; padding: 15px; margin-top: 20px; border: 1px solid #ccc; }
+    .hidden { display: none; }
   </style>
 </head>
 <body>
 
   <h1>Gerador de Mensagens</h1>
 
-  <h2>Rompimento de Fibra Residencial</h2>
-
-  <label for="topologia">Topologia:</label>
-  <select id="topologia">
-    <option value="HFC">HFC</option>
-    <option value="GPON">GPON</option>
+  <label for="tipoMensagem">Escolha o tipo de mensagem:</label>
+  <select id="tipoMensagem" onchange="mostrarFormulario()">
+    <option value="">-- Selecione --</option>
+    <option value="rompimento">Rompimento de Fibra Residencial</option>
+    <option value="manobra">Manobra de Fibra Residencial</option>
   </select>
 
-  <label for="grupo">Grupo:</label>
-  <input type="text" id="grupo">
+  <!-- Formulário de Rompimento -->
+  <div id="formRompimento" class="hidden">
+    <h2>Rompimento de Fibra Residencial</h2>
 
-  <label for="cidade">Cidade:</label>
-  <input type="text" id="cidade">
+    <label for="topologia">Topologia:</label>
+    <select id="topologia">
+      <option value="HFC">HFC</option>
+      <option value="GPON">GPON</option>
+    </select>
 
-  <label for="incidente">Incidente:</label>
-  <input type="text" id="incidente">
+    <label for="grupo">Grupo:</label>
+    <input type="text" id="grupo">
 
-  <label for="distrito">Área/Distrito:</label>
-  <input type="text" id="distrito">
+    <label for="cidade">Cidade:</label>
+    <input type="text" id="cidade">
 
-  <label for="impacto">Impacto:</label>
-  <input type="text" id="impacto">
+    <label for="incidente">Incidente:</label>
+    <input type="text" id="incidente">
 
-  <label for="base">Base Afetada:</label>
-  <input type="text" id="base">
+    <label for="distrito">Área/Distrito:</label>
+    <input type="text" id="distrito">
 
-  <label for="abertura">Horário de Abertura:</label>
-  <input type="text" id="abertura">
+    <label for="impacto">Impacto:</label>
+    <input type="text" id="impacto">
 
-  <label for="previsao">Previsão do Outage:</label>
-  <input type="text" id="previsao">
+    <label for="base">Base Afetada:</label>
+    <input type="text" id="base">
 
-  <label for="acionamento">Horário de Acionamento:</label>
-  <input type="text" id="acionamento" placeholder="Se vazio, será 'AGUARDANDO DISPONIBILIDADE TÉCNICA'">
+    <label for="abertura">Horário de Abertura:</label>
+    <input type="text" id="abertura">
 
-  <label for="encerramento">Horário de Encerramento:</label>
-  <input type="text" id="encerramento">
+    <label for="previsao">Previsão do Outage:</label>
+    <input type="text" id="previsao">
 
-  <label for="status">Tipo de Status:</label>
-  <select id="status">
-    <option value="inicial">Inicial</option>
-    <option value="atualizacao">Atualização</option>
-    <option value="encerramento">Encerramento</option>
-  </select>
+    <label for="acionamento">Horário de Acionamento:</label>
+    <input type="text" id="acionamento" placeholder="Se vazio, será 'AGUARDANDO DISPONIBILIDADE TÉCNICA'">
 
-  <div id="statusCampos"></div>
+    <label for="encerramento">Horário de Encerramento:</label>
+    <input type="text" id="encerramento">
 
-  <button onclick="gerarMensagem()">Gerar Mensagem de Rompimento</button>
+    <label for="status">Tipo de Status:</label>
+    <select id="status" onchange="atualizarCamposStatus()">
+      <option value="inicial">Inicial</option>
+      <option value="atualizacao">Atualização</option>
+      <option value="encerramento">Encerramento</option>
+    </select>
 
-  <hr>
-  <h2>Manobra de Fibra Residencial</h2>
+    <div id="statusCampos"></div>
 
-  <label for="topologiaManobra">Topologia:</label>
-  <select id="topologiaManobra">
-    <option value="HFC">HFC</option>
-    <option value="GPON">GPON</option>
-  </select>
+    <button onclick="gerarMensagem()">Gerar Mensagem de Rompimento</button>
+  </div>
 
-  <label for="ticket">Ticket:</label>
-  <input type="text" id="ticket">
+  <!-- Formulário de Manobra -->
+  <div id="formManobra" class="hidden">
+    <h2>Manobra de Fibra Residencial</h2>
 
-  <label for="incidenteManobra">Incidente:</label>
-  <input type="text" id="incidenteManobra">
+    <label for="topologiaManobra">Topologia:</label>
+    <select id="topologiaManobra">
+      <option value="HFC">HFC</option>
+      <option value="GPON">GPON</option>
+    </select>
 
-  <label for="cidadeManobra">Cidade:</label>
-  <input type="text" id="cidadeManobra">
+    <label for="ticket">Ticket:</label>
+    <input type="text" id="ticket">
 
-  <label for="distritoManobra">Distrito:</label>
-  <input type="text" id="distritoManobra">
+    <label for="incidenteManobra">Incidente:</label>
+    <input type="text" id="incidenteManobra">
 
-  <label for="impactoManobra">Impacto:</label>
-  <input type="text" id="impactoManobra">
+    <label for="cidadeManobra">Cidade:</label>
+    <input type="text" id="cidadeManobra">
 
-  <label for="baseManobra">Base Afetada:</label>
-  <input type="text" id="baseManobra">
+    <label for="distritoManobra">Distrito:</label>
+    <input type="text" id="distritoManobra">
 
-  <label for="executor">Executor:</label>
-  <input type="text" id="executor">
+    <label for="impactoManobra">Impacto:</label>
+    <input type="text" id="impactoManobra">
 
-  <label for="responsavel">Responsável:</label>
-  <input type="text" id="responsavel">
+    <label for="baseManobra">Base Afetada:</label>
+    <input type="text" id="baseManobra">
 
-  <label for="enderecoManobra">Endereço:</label>
-  <input type="text" id="enderecoManobra">
+    <label for="executor">Executor:</label>
+    <input type="text" id="executor">
 
-  <label for="inicio">Horário de Início:</label>
-  <input type="text" id="inicio">
+    <label for="responsavel">Responsável:</label>
+    <input type="text" id="responsavel">
 
-  <label for="proposto">Proposto:</label>
-  <input type="text" id="proposto">
+    <label for="enderecoManobra">Endereço:</label>
+    <input type="text" id="enderecoManobra">
 
-  <label for="statusManobra">Status:</label>
-  <input type="text" id="statusManobra">
+    <label for="inicio">Horário de Início:</label>
+    <input type="text" id="inicio">
 
-  <button onclick="gerarMensagemManobra()">Gerar Mensagem de Manobra</button>
+    <label for="proposto">Proposto:</label>
+    <input type="text" id="proposto">
+
+    <label for="statusManobra">Status:</label>
+    <input type="text" id="statusManobra">
+
+    <button onclick="gerarMensagemManobra()">Gerar Mensagem de Manobra</button>
+  </div>
 
   <div id="output"></div>
 
   <script>
-    const statusCampos = document.getElementById('statusCampos');
-    document.getElementById('status').addEventListener('change', atualizarCamposStatus);
+    function mostrarFormulario() {
+      const tipo = document.getElementById('tipoMensagem').value;
+      document.getElementById('formRompimento').classList.add('hidden');
+      document.getElementById('formManobra').classList.add('hidden');
+      if (tipo === 'rompimento') {
+        document.getElementById('formRompimento').classList.remove('hidden');
+      } else if (tipo === 'manobra') {
+        document.getElementById('formManobra').classList.remove('hidden');
+      }
+    }
 
     function atualizarCamposStatus() {
       const tipo = document.getElementById('status').value;
+      const statusCampos = document.getElementById('statusCampos');
       statusCampos.innerHTML = '';
 
       if (tipo === 'inicial') {
@@ -157,23 +179,3 @@
       msg += `## HORÁRIO DE ABERTURA: ${get('abertura')}\n`;
       msg += `## PREVISÃO DO OUTAGE: ${get('previsao')}\n`;
       msg += `## HORÁRIO DE ACIONAMENTO: ${get('acionamento') || 'AGUARDANDO DISPONIBILIDADE TÉCNICA'}\n`;
-      msg += `## HORÁRIO DE ENCERRAMENTO: ${get('encerramento')}\n`;
-
-      const tipo = document.getElementById('status').value;
-      if (tipo === 'inicial') {
-        msg += `## STATUS: EQUIPE ACIONADA: ${get('tecnico')} | SCAN REALIZADO: ${scanKM} | ESCALONAMENTO: ${get('escalonado')}\n`;
-        msg += `## ⚠️`;
-      } else if (tipo === 'atualizacao') {
-        msg += `## STATUS: ${get('statusAtual')} | VALIDADO: ${get('validado')}%\n`;
-        msg += `## ⚠️`;
-      } else if (tipo === 'encerramento') {
-        msg += `## STATUS: ${get('fca')}\n`;
-        msg += `## ENDEREÇO DO DANO: ${get('enderecoDano')}\n`;
-        msg += `## ✅`;
-      }
-
-      document.getElementById('output').innerText = msg;
-    }
-
-    function gerarMensagemManobra() {
-      const get = id => document.getElementById(id).value
