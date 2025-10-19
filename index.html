@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Gerador de Mensagens</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f4f4f4; }
+    h1 { text-transform: uppercase; }
+    label { display: block; margin-top: 10px; }
+    input, select, textarea { width: 100%; padding: 8px; margin-top: 5px; }
+    button { margin-top: 20px; padding: 10px 20px; }
+    #output { white-space: pre-wrap; background: #fff; padding: 15px; margin-top: 20px; border: 1px solid #ccc; }
+  </style>
+</head>
+<body>
+
+  <h1>Gerador de Mensagens</h1>
+
+  <label for="topologia">Topologia:</label>
+  <select id="topologia">
+    <option value="HFC">HFC</option>
+    <option value="GPON">GPON</option>
+  </select>
+
+  <label for="grupo">Grupo:</label>
+  <input type="text" id="grupo">
+
+  <label for="cidade">Cidade:</label>
+  <input type="text" id="cidade">
+
+  <label for="incidente">Incidente:</label>
+  <input type="text" id="incidente">
+
+  <label for="distrito">Área/Distrito:</label>
+  <input type="text" id="distrito">
+
+  <label for="impacto">Impacto:</label>
+  <input type="text" id="impacto">
+
+  <label for="base">Base Afetada:</label>
+  <input type="text" id="base">
+
+  <label for="abertura">Horário de Abertura:</label>
+  <input type="text" id="abertura">
+
+  <label for="acionamento">Horário de Acionamento:</label>
+  <input type="text" id="acionamento" placeholder="Se vazio, será 'AGUARDANDO DISPONIBILIDADE TÉCNICA'">
+
+  <label for="status">Tipo de Status:</label>
+  <select id="status">
+    <option value="inicial">Inicial</option>
+    <option value="atualizacao">Atualização</option>
+    <option value="encerramento">Encerramento</option>
+  </select>
+
+  <div id="statusCampos"></div>
+
+  <button onclick="gerarMensagem()">Gerar Mensagem</button>
+
+  <div id="output"></div>
+
+  <script>
+    const statusCampos = document.getElementById('statusCampos');
+    document.getElementById('status').addEventListener('change', atualizarCamposStatus);
+
+    function atualizarCamposStatus() {
+      const tipo = document.getElementById('status').value;
+      statusCampos.innerHTML = '';
+
+      if (tipo === 'inicial') {
+        statusCampos.innerHTML = `
+          <label for="tecnico">Técnico:</label><input type="text" id="tecnico">
+          <label for="scan">KM ou Metros Scaneado:</label><input type="text" id="scan">
+          <label for="escalonado">Responsável Escalonado:</label><input type="text" id="escalonado">
+        `;
+      } else if (tipo === 'atualizacao') {
+        statusCampos.innerHTML = `
+          <label for="statusAtual">Status Atual:</label><input type="text" id="statusAtual">
+          <label for="validado">Percentual Validado (%):</label><input type="text" id="validado">
+        `;
+      } else if (tipo === 'encerramento') {
+        statusCampos.innerHTML = `
+          <label for="fca">FCA (Fato, Causa, Ação):</label><textarea id="fca"></textarea>
+          <label for="enderecoDano">Endereço do Dano:</label><input type="text" id="enderecoDano">
+        `;
+      }
+    }
+
+    function gerarMensagem() {
+      const get = id => document.getElementById(id).value.toUpperCase() || '';
+      const scanRaw = document.getElementById('scan')?.value || '';
+      const scanKM = scanRaw.toLowerCase().includes('m') ? (parseFloat(scanRaw) / 1000).toFixed(3) + ' KM' : scanRaw.toUpperCase();
+
+      let msg = `## ROMPIMENTO DE FIBRA RESIDENCIAL\n`;
+      msg += `## TOPOLOGIA: ${get('topologia')}\n`;
+      msg += `## GRUPO: ${get('grupo')}\n`;
+      msg += `## CIDADE: ${get('cidade')}\n`;
+      msg += `## INCIDENTE: ${get('incidente')}\n`;
+      msg += `## ÁREA/DISTRITO: ${get('distrito')}\n`;
+      msg += `## IMPACTO: ${get('impacto')}\n`;
+      msg += `## BASE AFETADA: ${get('base')}\n`;
+      msg += `## HORÁRIO DE ABERTURA: ${get('abertura')}\n`;
+      msg += `## HORÁRIO DE ACIONAMENTO: ${get('acionamento') || 'AGUARDANDO DISPONIBILIDADE TÉCNICA'}\n`;
+
+      const tipo = document.getElementById('status').value;
+      if (tipo === 'inicial') {
+        msg += `## STATUS: EQUIPE ACIONADA: ${get('tecnico')} | SCAN REALIZADO: ${scanKM} | ESCALONAMENTO: ${get('escalonado')}\n`;
+        msg += `## ⚠️`;
+      } else if (tipo === 'atualizacao') {
+        msg += `## STATUS: ${get('statusAtual')} | VALIDADO: ${get('validado')}%\n`;
+        msg += `## ⚠️`;
+      } else if (tipo === 'encerramento') {
+        msg += `## STATUS: ${get('fca')}\n`;
+        msg += `## ENDEREÇO DO DANO: ${get('enderecoDano')}\n`;
+        msg += `## ✅`;
+      }
+
+      document.getElementById('output').innerText = msg;
+    }
+  </script>
+
+</body>
+</html>
