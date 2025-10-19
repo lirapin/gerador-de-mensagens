@@ -29,7 +29,7 @@
       background: linear-gradient(135deg, #f1f8e9, #e8f5e9);
       color: var(--text-color);
       line-height: 1.6;
-      padding: 15px;
+      padding: 20px;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -37,21 +37,21 @@
     }
 
     .container {
-      max-width: 800px;
+      max-width: 900px;
       width: 100%;
     }
 
     header {
       text-align: center;
-      margin-bottom: 20px;
-      padding: 15px;
+      margin-bottom: 30px;
+      padding: 20px;
     }
 
     h1 {
       color: var(--primary-dark);
       text-transform: uppercase;
-      font-size: 24px;
-      margin-bottom: 5px;
+      font-size: 28px;
+      margin-bottom: 10px;
       letter-spacing: 1px;
     }
 
@@ -59,8 +59,8 @@
       background: white;
       border-radius: var(--border-radius);
       box-shadow: var(--box-shadow);
-      padding: 20px;
-      margin-bottom: 20px;
+      padding: 25px;
+      margin-bottom: 25px;
       transition: var(--transition);
       width: 100%;
     }
@@ -72,29 +72,28 @@
     h2 {
       color: var(--primary-color);
       border-bottom: 2px solid var(--accent-color);
-      padding-bottom: 8px;
-      margin-bottom: 15px;
-      font-size: 20px;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+      font-size: 22px;
     }
 
     .form-group {
-      margin-bottom: 15px;
+      margin-bottom: 20px;
     }
 
     label {
       display: block;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
       font-weight: 600;
       color: var(--primary-dark);
-      font-size: 14px;
     }
 
     input, select, textarea {
       width: 100%;
-      padding: 10px 12px;
+      padding: 12px 15px;
       border: 1px solid #ddd;
       border-radius: var(--border-radius);
-      font-size: 14px;
+      font-size: 16px;
       transition: var(--transition);
       background-color: #f9f9f9;
     }
@@ -113,9 +112,9 @@
     }
 
     .date-format {
-      font-size: 11px;
+      font-size: 12px;
       color: var(--text-light);
-      margin-top: 4px;
+      margin-top: 5px;
     }
 
     button {
@@ -123,8 +122,8 @@
       color: white;
       border: none;
       border-radius: var(--border-radius);
-      padding: 10px 20px;
-      font-size: 14px;
+      padding: 12px 25px;
+      font-size: 16px;
       font-weight: 600;
       cursor: pointer;
       transition: var(--transition);
@@ -140,7 +139,7 @@
     }
 
     button i {
-      margin-right: 6px;
+      margin-right: 8px;
     }
 
     .btn-copy {
@@ -154,8 +153,8 @@
 
     .button-group {
       display: flex;
-      gap: 12px;
-      margin-top: 20px;
+      gap: 15px;
+      margin-top: 25px;
     }
 
     .hidden {
@@ -165,23 +164,22 @@
     #output {
       white-space: pre-wrap;
       background: var(--secondary-color);
-      padding: 15px;
+      padding: 20px;
       border-radius: var(--border-radius);
       border-left: 4px solid var(--primary-color);
-      margin-top: 20px;
+      margin-top: 25px;
       font-family: 'Courier New', monospace;
       line-height: 1.5;
-      max-height: 350px;
+      max-height: 400px;
       overflow-y: auto;
-      font-size: 13px;
     }
 
     .status-indicator {
       display: inline-block;
-      width: 10px;
-      height: 10px;
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
-      margin-right: 6px;
+      margin-right: 8px;
     }
 
     .status-active {
@@ -194,38 +192,49 @@
 
     footer {
       text-align: center;
-      margin-top: 25px;
+      margin-top: 40px;
       color: var(--text-light);
-      font-size: 13px;
+      font-size: 14px;
       width: 100%;
     }
 
     .error-message {
       color: #d32f2f;
-      font-size: 12px;
-      margin-top: 4px;
+      font-size: 14px;
+      margin-top: 5px;
       display: none;
     }
 
     .signature {
       text-align: center;
-      margin-top: 15px;
+      margin-top: 20px;
       color: var(--text-light);
       border-top: 1px solid var(--accent-color);
-      padding-top: 8px;
+      padding-top: 10px;
       font-style: normal;
     }
 
-    .info-message {
-      background-color: #e3f2fd;
-      border-left: 4px solid #2196f3;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 4px;
-      font-size: 13px;
+    .form-row {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .form-row .form-group {
+      flex: 1;
+      margin-bottom: 0;
+    }
+
+    .full-width {
+      width: 100%;
     }
 
     @media (max-width: 768px) {
+      .form-row {
+        flex-direction: column;
+        gap: 0;
+      }
+      
       .button-group {
         flex-direction: column;
       }
@@ -256,70 +265,75 @@
     <div id="formRompimento" class="card hidden">
       <h2><span class="status-indicator status-active"></span>Rompimento de Fibra Residencial</h2>
 
-      <div class="form-group">
-        <label for="topologia">Topologia:</label>
-        <select id="topologia">
-          <option value="HFC">HFC</option>
-          <option value="GPON">GPON</option>
-        </select>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="topologia">Topologia:</label>
+          <select id="topologia">
+            <option value="HFC">HFC</option>
+            <option value="GPON">GPON</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="incidente">Incidente:</label>
+          <input type="text" id="incidente">
+        </div>
       </div>
 
-      <div class="form-group">
-        <label for="grupo">Grupo:</label>
-        <input type="text" id="grupo">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="cidade">Cidade/Cluster:</label>
+          <input type="text" id="cidade" placeholder="Ex: Manaus - NO">
+        </div>
+        
+        <div class="form-group">
+          <label for="distrito">Área/Distrito:</label>
+          <input type="text" id="distrito">
+        </div>
       </div>
 
-      <div class="form-group">
-        <label for="cidade">Cidade:</label>
-        <input type="text" id="cidade">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="impacto">Impacto:</label>
+          <input type="text" id="impacto">
+        </div>
+        
+        <div class="form-group">
+          <label for="base">Base Afetada:</label>
+          <input type="text" id="base">
+        </div>
       </div>
 
-      <div class="form-group">
-        <label for="incidente">Incidente:</label>
-        <input type="text" id="incidente">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="abertura">Data e Hora de Abertura:</label>
+          <input type="text" id="abertura" placeholder="dd/mm/aaaa - hh:mm">
+          <div class="date-format">Formato obrigatório: dd/mm/aaaa - hh:mm</div>
+          <div class="error-message" id="abertura-error">Formato incorreto. Use: dd/mm/aaaa - hh:mm</div>
+        </div>
+        
+        <div class="form-group">
+          <label for="previsao">Previsão do Outage:</label>
+          <input type="text" id="previsao" placeholder="dd/mm/aaaa - hh:mm">
+          <div class="date-format">Formato obrigatório: dd/mm/aaaa - hh:mm</div>
+          <div class="error-message" id="previsao-error">Formato incorreto. Use: dd/mm/aaaa - hh:mm</div>
+        </div>
       </div>
 
-      <div class="form-group">
-        <label for="distrito">Área/Distrito:</label>
-        <input type="text" id="distrito">
-      </div>
-
-      <div class="form-group">
-        <label for="impacto">Impacto:</label>
-        <input type="text" id="impacto">
-      </div>
-
-      <div class="form-group">
-        <label for="base">Base Afetada:</label>
-        <input type="text" id="base">
-      </div>
-
-      <div class="form-group">
-        <label for="abertura">Data e Hora de Abertura:</label>
-        <input type="text" id="abertura" placeholder="dd/mm/aaaa - hh:mm">
-        <div class="date-format">Formato obrigatório: dd/mm/aaaa - hh:mm</div>
-        <div class="error-message" id="abertura-error">Formato incorreto. Use: dd/mm/aaaa - hh:mm</div>
-      </div>
-
-      <div class="form-group">
-        <label for="previsao">Data e Hora da Previsão do Outage:</label>
-        <input type="text" id="previsao" placeholder="dd/mm/aaaa - hh:mm">
-        <div class="date-format">Formato obrigatório: dd/mm/aaaa - hh:mm</div>
-        <div class="error-message" id="previsao-error">Formato incorreto. Use: dd/mm/aaaa - hh:mm</div>
-      </div>
-
-      <div class="form-group">
-        <label for="acionamento">Data e Hora de Acionamento:</label>
-        <input type="text" id="acionamento" placeholder="Se vazio, será 'AGUARDANDO DISPONIBILIDADE TÉCNICA'">
-        <div class="date-format">Formato obrigatório: dd/mm/aaaa - hh:mm</div>
-        <div class="error-message" id="acionamento-error">Formato incorreto. Use: dd/mm/aaaa - hh:mm</div>
-      </div>
-
-      <div class="form-group">
-        <label for="encerramento">Data e Hora de Encerramento:</label>
-        <input type="text" id="encerramento" placeholder="dd/mm/aaaa - hh:mm" disabled>
-        <div class="date-format">Formato obrigatório: dd/mm/aaaa - hh:mm</div>
-        <div class="error-message" id="encerramento-error">Formato incorreto. Use: dd/mm/aaaa - hh:mm</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="acionamento">Data e Hora de Acionamento:</label>
+          <input type="text" id="acionamento" placeholder="dd/mm/aaaa - hh:mm">
+          <div class="date-format">Se vazio, será 'Aguardando disponibilidade técnica'</div>
+          <div class="error-message" id="acionamento-error">Formato incorreto. Use: dd/mm/aaaa - hh:mm</div>
+        </div>
+        
+        <div class="form-group">
+          <label for="encerramento">Data e Hora de Encerramento:</label>
+          <input type="text" id="encerramento" placeholder="dd/mm/aaaa - hh:mm" disabled>
+          <div class="date-format">Formato obrigatório: dd/mm/aaaa - hh:mm</div>
+          <div class="error-message" id="encerramento-error">Formato incorreto. Use: dd/mm/aaaa - hh:mm</div>
+        </div>
       </div>
 
       <div class="form-group">
@@ -342,74 +356,88 @@
     <div id="formManobra" class="card hidden">
       <h2><span class="status-indicator status-active"></span>Manobra de Fibra Residencial</h2>
 
-      <div class="form-group">
-        <label for="topologiaManobra">Topologia:</label>
-        <select id="topologiaManobra">
-          <option value="HFC">HFC</option>
-          <option value="GPON">GPON</option>
-        </select>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="topologiaManobra">Topologia:</label>
+          <select id="topologiaManobra">
+            <option value="HFC">HFC</option>
+            <option value="GPON">GPON</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="ticket">Ticket:</label>
+          <input type="text" id="ticket">
+        </div>
       </div>
 
-      <div class="form-group">
-        <label for="ticket">Ticket:</label>
-        <input type="text" id="ticket">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="incidenteManobra">Incidente:</label>
+          <input type="text" id="incidenteManobra">
+        </div>
+        
+        <div class="form-group">
+          <label for="cidadeManobra">Cidade/Cluster:</label>
+          <input type="text" id="cidadeManobra" placeholder="Ex: Manaus - NO">
+        </div>
       </div>
 
-      <div class="form-group">
-        <label for="incidenteManobra">Incidente:</label>
-        <input type="text" id="incidenteManobra">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="distritoManobra">Distrito:</label>
+          <input type="text" id="distritoManobra">
+        </div>
+        
+        <div class="form-group">
+          <label for="impactoManobra">Impacto:</label>
+          <input type="text" id="impactoManobra">
+        </div>
       </div>
 
-      <div class="form-group">
-        <label for="cidadeManobra">Cidade:</label>
-        <input type="text" id="cidadeManobra">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="baseManobra">Base Afetada:</label>
+          <input type="text" id="baseManobra">
+        </div>
+        
+        <div class="form-group">
+          <label for="statusManobra">Status:</label>
+          <input type="text" id="statusManobra">
+        </div>
       </div>
 
-      <div class="form-group">
-        <label for="distritoManobra">Distrito:</label>
-        <input type="text" id="distritoManobra">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="executor">Executor:</label>
+          <input type="text" id="executor">
+        </div>
+        
+        <div class="form-group">
+          <label for="responsavel">Responsável:</label>
+          <input type="text" id="responsavel">
+        </div>
       </div>
 
-      <div class="form-group">
-        <label for="impactoManobra">Impacto:</label>
-        <input type="text" id="impactoManobra">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="enderecoManobra">Endereço:</label>
+          <input type="text" id="enderecoManobra">
+        </div>
+        
+        <div class="form-group">
+          <label for="proposto">Proposto:</label>
+          <input type="text" id="proposto">
+        </div>
       </div>
 
-      <div class="form-group">
-        <label for="baseManobra">Base Afetada:</label>
-        <input type="text" id="baseManobra">
-      </div>
-
-      <div class="form-group">
-        <label for="executor">Executor:</label>
-        <input type="text" id="executor">
-      </div>
-
-      <div class="form-group">
-        <label for="responsavel">Responsável:</label>
-        <input type="text" id="responsavel">
-      </div>
-
-      <div class="form-group">
-        <label for="enderecoManobra">Endereço:</label>
-        <input type="text" id="enderecoManobra">
-      </div>
-
-      <div class="form-group">
-        <label for="inicio">Data e Hora de Início:</label>
-        <input type="text" id="inicio" placeholder="dd/mm/aaaa - hh:mm">
-        <div class="date-format">Formato obrigatório: dd/mm/aaaa - hh:mm</div>
-        <div class="error-message" id="inicio-error">Formato incorreto. Use: dd/mm/aaaa - hh:mm</div>
-      </div>
-
-      <div class="form-group">
-        <label for="proposto">Proposto:</label>
-        <input type="text" id="proposto">
-      </div>
-
-      <div class="form-group">
-        <label for="statusManobra">Status:</label>
-        <input type="text" id="statusManobra">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="inicio">Data e Hora de Início:</label>
+          <input type="text" id="inicio" placeholder="dd/mm/aaaa - hh:mm">
+          <div class="date-format">Formato obrigatório: dd/mm/aaaa - hh:mm</div>
+          <div class="error-message" id="inicio-error">Formato incorreto. Use: dd/mm/aaaa - hh:mm</div>
+        </div>
       </div>
 
       <div class="button-group">
@@ -462,13 +490,17 @@
 
       if (tipo === 'inicial') {
         statusCampos.innerHTML = `
-          <div class="info-message">
-            <strong>Informações para Status Inicial:</strong><br>
-            Insira todas as informações em um único campo abaixo.
+          <div class="form-group">
+            <label for="tecnico">Técnico:</label>
+            <input type="text" id="tecnico">
           </div>
           <div class="form-group">
-            <label for="informacoesIniciais">Detalhes do Status Inicial:</label>
-            <textarea id="informacoesIniciais" rows="4" placeholder="Ex: Técnico Thiago acionado. Fibras parando a 50 km. Escalonado coord. Fulano..."></textarea>
+            <label for="scan">KM ou Metros Scaneado:</label>
+            <input type="text" id="scan">
+          </div>
+          <div class="form-group">
+            <label for="escalonado">Responsável Escalonado:</label>
+            <input type="text" id="escalonado">
           </div>
         `;
       } else if (tipo === 'atualizacao') {
@@ -536,33 +568,35 @@
       }
 
       const get = id => document.getElementById(id)?.value.toUpperCase() || '';
+      const scanRaw = document.getElementById('scan')?.value || '';
+      const scanKM = scanRaw.toLowerCase().includes('m') ? (parseFloat(scanRaw) / 1000).toFixed(3) + ' KM' : scanRaw.toUpperCase();
 
       let msg = `## ROMPIMENTO DE FIBRA RESIDENCIAL\n`;
       msg += `## TOPOLOGIA: ${get('topologia')}\n`;
-      msg += `## GRUPO: ${get('grupo')}\n`;
-      msg += `## CIDADE: ${get('cidade')}\n`;
       msg += `## INCIDENTE: ${get('incidente')}\n`;
+      msg += `## CIDADE/CLUSTER: ${get('cidade')}\n`;
       msg += `## ÁREA/DISTRITO: ${get('distrito')}\n`;
       msg += `## IMPACTO: ${get('impacto')}\n`;
       msg += `## BASE AFETADA: ${get('base')}\n`;
-      msg += `## HORÁRIO DE ABERTURA: ${get('abertura')}\n`;
+      msg += `## DATA E HORA DE ABERTURA: ${get('abertura')}\n`;
       msg += `## PREVISÃO DO OUTAGE: ${get('previsao')}\n`;
-      msg += `## HORÁRIO DE ACIONAMENTO: ${get('acionamento') || 'AGUARDANDO DISPONIBILIDADE TÉCNICA'}\n`;
+      msg += `## DATA E HORA DE ACIONAMENTO: ${get('acionamento') || 'AGUARDANDO DISPONIBILIDADE TÉCNICA'}\n`;
       
       if (tipoStatus === 'encerramento') {
-        msg += `## HORÁRIO DE ENCERRAMENTO: ${get('encerramento')}\n`;
+        msg += `## DATA E HORA DE ENCERRAMENTO: ${get('encerramento')}\n`;
       }
       
+      msg += `## TIPO DE STATUS: ${document.getElementById('status').options[document.getElementById('status').selectedIndex].text.toUpperCase()}\n`;
+      
       if (tipoStatus === 'inicial') {
-        const informacoes = document.getElementById('informacoesIniciais').value;
-        if (informacoes) {
-          msg += `## INFORMAÇÕES INICIAIS: ${informacoes.toUpperCase()}\n`;
-        }
+        msg += `## TÉCNICO: ${get('tecnico')}\n`;
+        msg += `## SCAN: ${scanKM}\n`;
+        msg += `## RESPONSÁVEL ESCALONADO: ${get('escalonado')}\n`;
       } else if (tipoStatus === 'atualizacao') {
         msg += `## STATUS ATUAL: ${get('statusAtual')}\n`;
         msg += `## PERCENTUAL VALIDADO: ${get('validado')}%\n`;
       } else if (tipoStatus === 'encerramento') {
-        msg += `## FCA: ${get('fca')}\n`;
+        msg += `## FCA (FATO, CAUSA, AÇÃO): ${get('fca')}\n`;
         msg += `## ENDEREÇO DO DANO: ${get('enderecoDano')}\n`;
         msg += `\n✅ SITUAÇÃO NORMALIZADA - SERVIÇO CONCLUÍDO COM SUCESSO`;
       }
@@ -588,14 +622,14 @@
       msg += `## TOPOLOGIA: ${get('topologiaManobra')}\n`;
       msg += `## TICKET: ${get('ticket')}\n`;
       msg += `## INCIDENTE: ${get('incidenteManobra')}\n`;
-      msg += `## CIDADE: ${get('cidadeManobra')}\n`;
+      msg += `## CIDADE/CLUSTER: ${get('cidadeManobra')}\n`;
       msg += `## DISTRITO: ${get('distritoManobra')}\n`;
       msg += `## IMPACTO: ${get('impactoManobra')}\n`;
       msg += `## BASE AFETADA: ${get('baseManobra')}\n`;
       msg += `## EXECUTOR: ${get('executor')}\n`;
       msg += `## RESPONSÁVEL: ${get('responsavel')}\n`;
       msg += `## ENDEREÇO: ${get('enderecoManobra')}\n`;
-      msg += `## HORÁRIO DE INÍCIO: ${get('inicio')}\n`;
+      msg += `## DATA E HORA DE INÍCIO: ${get('inicio')}\n`;
       msg += `## PROPOSTO: ${get('proposto')}\n`;
       msg += `## STATUS: ${get('statusManobra')}\n`;
       
