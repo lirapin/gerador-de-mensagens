@@ -327,15 +327,16 @@
           <div class="date-format">Se vazio, será 'Aguardando disponibilidade técnica'</div>
           <div class="error-message" id="acionamento-error">Formato incorreto. Use: dd/mm/aaaa - hh:mm</div>
         </div>
-      </div>
-
-      <div class="form-group">
-        <label for="status">Tipo de Status:</label>
-        <select id="status" onchange="atualizarCamposStatus()">
-          <option value="inicial">Inicial</option>
-          <option value="atualizacao">Atualização</option>
-          <option value="encerramento">Encerramento</option>
-        </select>
+        
+        <div class="form-group">
+          <label for="status">Tipo de Status:</label>
+          <select id="status" onchange="atualizarCamposStatus()">
+            <option value="">-- Selecione o tipo de status --</option>
+            <option value="inicial">Inicial</option>
+            <option value="atualizacao">Atualização</option>
+            <option value="encerramento">Encerramento</option>
+          </select>
+        </div>
       </div>
 
       <div id="statusCampos"></div>
@@ -418,6 +419,7 @@
       <div class="form-group">
         <label for="statusManobra">Tipo de Status:</label>
         <select id="statusManobra" onchange="atualizarCamposStatusManobra()">
+          <option value="">-- Selecione o tipo de status --</option>
           <option value="inicial">Inicial</option>
           <option value="atualizacao">Atualização</option>
           <option value="encerramento">Encerramento</option>
@@ -539,10 +541,7 @@
             <label for="fcaManobra">FCA (Fato, Causa, Ação):</label>
             <textarea id="fcaManobra" rows="3"></textarea>
           </div>
-          <div class="form-group">
-            <label for="enderecoDanoManobra">Endereço do Dano:</label>
-            <input type="text" id="enderecoDanoManobra">
-          </div>
+          <!-- Removido o campo "Endereço do Dano" para manobra no encerramento -->
         `;
       }
     }
@@ -560,9 +559,15 @@
     }
 
     function gerarMensagem() {
+      // Verificar se o tipo de status foi selecionado
+      const tipoStatus = document.getElementById('status').value;
+      if (!tipoStatus) {
+        alert('Por favor, selecione o tipo de status');
+        return;
+      }
+
       // Validar campos de data/hora
       const camposDataHora = ['abertura', 'previsao', 'acionamento'];
-      const tipoStatus = document.getElementById('status').value;
       
       // Se for encerramento, validar também o campo de encerramento
       if (tipoStatus === 'encerramento') {
@@ -618,9 +623,15 @@
     }
 
     function gerarMensagemManobra() {
+      // Verificar se o tipo de status foi selecionado
+      const tipoStatus = document.getElementById('statusManobra').value;
+      if (!tipoStatus) {
+        alert('Por favor, selecione o tipo de status');
+        return;
+      }
+
       // Validar campos de data/hora
       const camposDataHora = [];
-      const tipoStatus = document.getElementById('statusManobra').value;
       
       // Se for encerramento, validar também o campo de encerramento
       if (tipoStatus === 'encerramento') {
@@ -669,7 +680,7 @@
       } else if (tipoStatus === 'encerramento') {
         msg += `## DATA E HORA DE ENCERRAMENTO: ${get('encerramentoManobra')}\n`;
         msg += `## FCA (FATO, CAUSA, AÇÃO): ${get('fcaManobra')}\n`;
-        msg += `## ENDEREÇO DO DANO: ${get('enderecoDanoManobra')}\n`;
+        // Removido o endereço do dano para manobra no encerramento
         msg += `\n✅ SITUAÇÃO NORMALIZADA - SERVIÇO CONCLUÍDO COM SUCESSO`;
       }
       
