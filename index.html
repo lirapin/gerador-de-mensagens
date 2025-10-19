@@ -283,7 +283,7 @@
       <div class="form-row">
         <div class="form-group">
           <label for="cidade">Cidade/Cluster:</label>
-          <input type="text" id="cidade" placeholder="Ex: Manaus - NO">
+          <input type="text" id="cidade" placeholder="Rio de Janeiro - RJO">
         </div>
         
         <div class="form-group">
@@ -327,13 +327,6 @@
           <div class="date-format">Se vazio, será 'Aguardando disponibilidade técnica'</div>
           <div class="error-message" id="acionamento-error">Formato incorreto. Use: dd/mm/aaaa - hh:mm</div>
         </div>
-        
-        <div class="form-group">
-          <label for="encerramento">Data e Hora de Encerramento:</label>
-          <input type="text" id="encerramento" placeholder="dd/mm/aaaa - hh:mm" disabled>
-          <div class="date-format">Formato obrigatório: dd/mm/aaaa - hh:mm</div>
-          <div class="error-message" id="encerramento-error">Formato incorreto. Use: dd/mm/aaaa - hh:mm</div>
-        </div>
       </div>
 
       <div class="form-group">
@@ -356,89 +349,82 @@
     <div id="formManobra" class="card hidden">
       <h2><span class="status-indicator status-active"></span>Manobra de Fibra Residencial</h2>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="topologiaManobra">Topologia:</label>
-          <select id="topologiaManobra">
-            <option value="HFC">HFC</option>
-            <option value="GPON">GPON</option>
-          </select>
-        </div>
-        
-        <div class="form-group">
-          <label for="ticket">Ticket:</label>
-          <input type="text" id="ticket">
-        </div>
+      <div class="form-group">
+        <label for="topologiaManobra">Topologia:</label>
+        <select id="topologiaManobra">
+          <option value="HFC">HFC</option>
+          <option value="GPON">GPON</option>
+        </select>
       </div>
 
       <div class="form-row">
+        <div class="form-group">
+          <label for="ticketManobra">Ticket da Manobra:</label>
+          <input type="text" id="ticketManobra">
+        </div>
+        
         <div class="form-group">
           <label for="incidenteManobra">Incidente:</label>
           <input type="text" id="incidenteManobra">
         </div>
-        
-        <div class="form-group">
-          <label for="cidadeManobra">Cidade/Cluster:</label>
-          <input type="text" id="cidadeManobra" placeholder="Ex: Manaus - NO">
-        </div>
       </div>
 
       <div class="form-row">
         <div class="form-group">
-          <label for="distritoManobra">Distrito:</label>
-          <input type="text" id="distritoManobra">
+          <label for="cidadeManobra">Cidade/Cluster:</label>
+          <input type="text" id="cidadeManobra" placeholder="Rio de Janeiro - RJO">
         </div>
         
+        <div class="form-group">
+          <label for="distritoManobra">Área/Distrito:</label>
+          <input type="text" id="distritoManobra">
+        </div>
+      </div>
+
+      <div class="form-row">
         <div class="form-group">
           <label for="impactoManobra">Impacto:</label>
           <input type="text" id="impactoManobra">
         </div>
-      </div>
-
-      <div class="form-row">
+        
         <div class="form-group">
           <label for="baseManobra">Base Afetada:</label>
           <input type="text" id="baseManobra">
         </div>
-        
-        <div class="form-group">
-          <label for="statusManobra">Status:</label>
-          <input type="text" id="statusManobra">
-        </div>
       </div>
 
       <div class="form-row">
         <div class="form-group">
-          <label for="executor">Executor:</label>
-          <input type="text" id="executor">
+          <label for="responsavelManobra">Responsável:</label>
+          <input type="text" id="responsavelManobra">
         </div>
         
         <div class="form-group">
-          <label for="responsavel">Responsável:</label>
-          <input type="text" id="responsavel">
+          <label for="executorManobra">Executor:</label>
+          <input type="text" id="executorManobra">
         </div>
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="enderecoManobra">Endereço:</label>
-          <input type="text" id="enderecoManobra">
-        </div>
-        
-        <div class="form-group">
-          <label for="proposto">Proposto:</label>
-          <input type="text" id="proposto">
-        </div>
+      <div class="form-group">
+        <label for="enderecoManobra">Endereço:</label>
+        <input type="text" id="enderecoManobra">
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="inicio">Data e Hora de Início:</label>
-          <input type="text" id="inicio" placeholder="dd/mm/aaaa - hh:mm">
-          <div class="date-format">Formato obrigatório: dd/mm/aaaa - hh:mm</div>
-          <div class="error-message" id="inicio-error">Formato incorreto. Use: dd/mm/aaaa - hh:mm</div>
-        </div>
+      <div class="form-group">
+        <label for="propostoManobra">Proposto:</label>
+        <input type="text" id="propostoManobra">
       </div>
+
+      <div class="form-group">
+        <label for="statusManobra">Tipo de Status:</label>
+        <select id="statusManobra" onchange="atualizarCamposStatusManobra()">
+          <option value="inicial">Inicial</option>
+          <option value="atualizacao">Atualização</option>
+          <option value="encerramento">Encerramento</option>
+        </select>
+      </div>
+
+      <div id="statusCamposManobra"></div>
 
       <div class="button-group">
         <button onclick="gerarMensagemManobra()"><i class="fas fa-file-alt"></i> Gerar Mensagem de Manobra</button>
@@ -476,31 +462,14 @@
     function atualizarCamposStatus() {
       const tipo = document.getElementById('status').value;
       const statusCampos = document.getElementById('statusCampos');
-      const encerramentoField = document.getElementById('encerramento');
-      
-      // Habilitar/desabilitar campo de encerramento
-      if (tipo === 'encerramento') {
-        encerramentoField.disabled = false;
-      } else {
-        encerramentoField.disabled = true;
-        encerramentoField.value = '';
-      }
       
       statusCampos.innerHTML = '';
 
       if (tipo === 'inicial') {
         statusCampos.innerHTML = `
           <div class="form-group">
-            <label for="tecnico">Técnico:</label>
-            <input type="text" id="tecnico">
-          </div>
-          <div class="form-group">
-            <label for="scan">KM ou Metros Scaneado:</label>
-            <input type="text" id="scan">
-          </div>
-          <div class="form-group">
-            <label for="escalonado">Responsável Escalonado:</label>
-            <input type="text" id="escalonado">
+            <label for="informacoesIniciais">Informações do Status Inicial:</label>
+            <textarea id="informacoesIniciais" rows="3" placeholder="Equipe acionada, responsável escalonado e outros."></textarea>
           </div>
         `;
       } else if (tipo === 'atualizacao') {
@@ -517,12 +486,62 @@
       } else if (tipo === 'encerramento') {
         statusCampos.innerHTML = `
           <div class="form-group">
+            <label for="encerramento">Data e Hora de Encerramento:</label>
+            <input type="text" id="encerramento" placeholder="dd/mm/aaaa - hh:mm">
+            <div class="date-format">Formato obrigatório: dd/mm/aaaa - hh:mm</div>
+            <div class="error-message" id="encerramento-error">Formato incorreto. Use: dd/mm/aaaa - hh:mm</div>
+          </div>
+          <div class="form-group">
             <label for="fca">FCA (Fato, Causa, Ação):</label>
             <textarea id="fca" rows="3"></textarea>
           </div>
           <div class="form-group">
             <label for="enderecoDano">Endereço do Dano:</label>
             <input type="text" id="enderecoDano">
+          </div>
+        `;
+      }
+    }
+
+    function atualizarCamposStatusManobra() {
+      const tipo = document.getElementById('statusManobra').value;
+      const statusCampos = document.getElementById('statusCamposManobra');
+      
+      statusCampos.innerHTML = '';
+
+      if (tipo === 'inicial') {
+        statusCampos.innerHTML = `
+          <div class="form-group">
+            <label for="informacoesIniciaisManobra">Informações do Status Inicial:</label>
+            <textarea id="informacoesIniciaisManobra" rows="3"></textarea>
+          </div>
+        `;
+      } else if (tipo === 'atualizacao') {
+        statusCampos.innerHTML = `
+          <div class="form-group">
+            <label for="statusAtualManobra">Status Atual:</label>
+            <input type="text" id="statusAtualManobra">
+          </div>
+          <div class="form-group">
+            <label for="validadoManobra">Percentual Validado (%):</label>
+            <input type="text" id="validadoManobra">
+          </div>
+        `;
+      } else if (tipo === 'encerramento') {
+        statusCampos.innerHTML = `
+          <div class="form-group">
+            <label for="encerramentoManobra">Data e Hora de Encerramento:</label>
+            <input type="text" id="encerramentoManobra" placeholder="dd/mm/aaaa - hh:mm">
+            <div class="date-format">Formato obrigatório: dd/mm/aaaa - hh:mm</div>
+            <div class="error-message" id="encerramentoManobra-error">Formato incorreto. Use: dd/mm/aaaa - hh:mm</div>
+          </div>
+          <div class="form-group">
+            <label for="fcaManobra">FCA (Fato, Causa, Ação):</label>
+            <textarea id="fcaManobra" rows="3"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="enderecoDanoManobra">Endereço do Dano:</label>
+            <input type="text" id="enderecoDanoManobra">
           </div>
         `;
       }
@@ -568,8 +587,6 @@
       }
 
       const get = id => document.getElementById(id)?.value.toUpperCase() || '';
-      const scanRaw = document.getElementById('scan')?.value || '';
-      const scanKM = scanRaw.toLowerCase().includes('m') ? (parseFloat(scanRaw) / 1000).toFixed(3) + ' KM' : scanRaw.toUpperCase();
 
       let msg = `## ROMPIMENTO DE FIBRA RESIDENCIAL\n`;
       msg += `## TOPOLOGIA: ${get('topologia')}\n`;
@@ -582,20 +599,15 @@
       msg += `## PREVISÃO DO OUTAGE: ${get('previsao')}\n`;
       msg += `## DATA E HORA DE ACIONAMENTO: ${get('acionamento') || 'AGUARDANDO DISPONIBILIDADE TÉCNICA'}\n`;
       
-      if (tipoStatus === 'encerramento') {
-        msg += `## DATA E HORA DE ENCERRAMENTO: ${get('encerramento')}\n`;
-      }
-      
       msg += `## TIPO DE STATUS: ${document.getElementById('status').options[document.getElementById('status').selectedIndex].text.toUpperCase()}\n`;
       
       if (tipoStatus === 'inicial') {
-        msg += `## TÉCNICO: ${get('tecnico')}\n`;
-        msg += `## SCAN: ${scanKM}\n`;
-        msg += `## RESPONSÁVEL ESCALONADO: ${get('escalonado')}\n`;
+        msg += `## INFORMAÇÕES INICIAIS: ${get('informacoesIniciais')}\n`;
       } else if (tipoStatus === 'atualizacao') {
         msg += `## STATUS ATUAL: ${get('statusAtual')}\n`;
         msg += `## PERCENTUAL VALIDADO: ${get('validado')}%\n`;
       } else if (tipoStatus === 'encerramento') {
+        msg += `## DATA E HORA DE ENCERRAMENTO: ${get('encerramento')}\n`;
         msg += `## FCA (FATO, CAUSA, AÇÃO): ${get('fca')}\n`;
         msg += `## ENDEREÇO DO DANO: ${get('enderecoDano')}\n`;
         msg += `\n✅ SITUAÇÃO NORMALIZADA - SERVIÇO CONCLUÍDO COM SUCESSO`;
@@ -606,32 +618,60 @@
     }
 
     function gerarMensagemManobra() {
-      // Validar campo de data/hora
-      const inicio = document.getElementById('inicio').value;
-      if (inicio && !validarFormatoDataHora(inicio)) {
-        mostrarErro('inicio', true);
-        alert('Por favor, corrija o campo de data/hora no formato dd/mm/aaaa - hh:mm');
+      // Validar campos de data/hora
+      const camposDataHora = [];
+      const tipoStatus = document.getElementById('statusManobra').value;
+      
+      // Se for encerramento, validar também o campo de encerramento
+      if (tipoStatus === 'encerramento') {
+        camposDataHora.push('encerramentoManobra');
+      }
+      
+      let dadosValidos = true;
+      
+      camposDataHora.forEach(campo => {
+        const valor = document.getElementById(campo).value;
+        if (valor && !validarFormatoDataHora(valor)) {
+          mostrarErro(campo, true);
+          dadosValidos = false;
+        } else {
+          mostrarErro(campo, false);
+        }
+      });
+      
+      if (!dadosValidos) {
+        alert('Por favor, corrija os campos de data/hora no formato dd/mm/aaaa - hh:mm');
         return;
-      } else {
-        mostrarErro('inicio', false);
       }
 
       const get = id => document.getElementById(id)?.value.toUpperCase() || '';
 
       let msg = `## MANOBRA DE FIBRA RESIDENCIAL\n`;
       msg += `## TOPOLOGIA: ${get('topologiaManobra')}\n`;
-      msg += `## TICKET: ${get('ticket')}\n`;
+      msg += `## TICKET DA MANOBRA: ${get('ticketManobra')}\n`;
       msg += `## INCIDENTE: ${get('incidenteManobra')}\n`;
       msg += `## CIDADE/CLUSTER: ${get('cidadeManobra')}\n`;
-      msg += `## DISTRITO: ${get('distritoManobra')}\n`;
+      msg += `## ÁREA/DISTRITO: ${get('distritoManobra')}\n`;
       msg += `## IMPACTO: ${get('impactoManobra')}\n`;
       msg += `## BASE AFETADA: ${get('baseManobra')}\n`;
-      msg += `## EXECUTOR: ${get('executor')}\n`;
-      msg += `## RESPONSÁVEL: ${get('responsavel')}\n`;
+      msg += `## RESPONSÁVEL: ${get('responsavelManobra')}\n`;
+      msg += `## EXECUTOR: ${get('executorManobra')}\n`;
       msg += `## ENDEREÇO: ${get('enderecoManobra')}\n`;
-      msg += `## DATA E HORA DE INÍCIO: ${get('inicio')}\n`;
-      msg += `## PROPOSTO: ${get('proposto')}\n`;
-      msg += `## STATUS: ${get('statusManobra')}\n`;
+      msg += `## PROPOSTO: ${get('propostoManobra')}\n`;
+      
+      msg += `## TIPO DE STATUS: ${document.getElementById('statusManobra').options[document.getElementById('statusManobra').selectedIndex].text.toUpperCase()}\n`;
+      
+      if (tipoStatus === 'inicial') {
+        msg += `## INFORMAÇÕES INICIAIS: ${get('informacoesIniciaisManobra')}\n`;
+      } else if (tipoStatus === 'atualizacao') {
+        msg += `## STATUS ATUAL: ${get('statusAtualManobra')}\n`;
+        msg += `## PERCENTUAL VALIDADO: ${get('validadoManobra')}%\n`;
+      } else if (tipoStatus === 'encerramento') {
+        msg += `## DATA E HORA DE ENCERRAMENTO: ${get('encerramentoManobra')}\n`;
+        msg += `## FCA (FATO, CAUSA, AÇÃO): ${get('fcaManobra')}\n`;
+        msg += `## ENDEREÇO DO DANO: ${get('enderecoDanoManobra')}\n`;
+        msg += `\n✅ SITUAÇÃO NORMALIZADA - SERVIÇO CONCLUÍDO COM SUCESSO`;
+      }
       
       document.getElementById('output').textContent = msg;
       document.getElementById('outputContainer').classList.remove('hidden');
