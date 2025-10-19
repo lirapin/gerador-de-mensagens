@@ -29,7 +29,7 @@
       background: linear-gradient(135deg, #f1f8e9, #e8f5e9);
       color: var(--text-color);
       line-height: 1.6;
-      padding: 20px;
+      padding: 15px;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -43,29 +43,24 @@
 
     header {
       text-align: center;
-      margin-bottom: 30px;
-      padding: 20px;
+      margin-bottom: 20px;
+      padding: 15px;
     }
 
     h1 {
       color: var(--primary-dark);
       text-transform: uppercase;
-      font-size: 28px;
-      margin-bottom: 10px;
+      font-size: 24px;
+      margin-bottom: 5px;
       letter-spacing: 1px;
-    }
-
-    .subtitle {
-      color: var(--text-light);
-      font-size: 16px;
     }
 
     .card {
       background: white;
       border-radius: var(--border-radius);
       box-shadow: var(--box-shadow);
-      padding: 25px;
-      margin-bottom: 25px;
+      padding: 20px;
+      margin-bottom: 20px;
       transition: var(--transition);
       width: 100%;
     }
@@ -77,28 +72,29 @@
     h2 {
       color: var(--primary-color);
       border-bottom: 2px solid var(--accent-color);
-      padding-bottom: 10px;
-      margin-bottom: 20px;
-      font-size: 22px;
+      padding-bottom: 8px;
+      margin-bottom: 15px;
+      font-size: 20px;
     }
 
     .form-group {
-      margin-bottom: 20px;
+      margin-bottom: 15px;
     }
 
     label {
       display: block;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       font-weight: 600;
       color: var(--primary-dark);
+      font-size: 14px;
     }
 
     input, select, textarea {
       width: 100%;
-      padding: 12px 15px;
+      padding: 10px 12px;
       border: 1px solid #ddd;
       border-radius: var(--border-radius);
-      font-size: 16px;
+      font-size: 14px;
       transition: var(--transition);
       background-color: #f9f9f9;
     }
@@ -110,10 +106,16 @@
       background-color: white;
     }
 
+    input:disabled {
+      background-color: #f0f0f0;
+      color: #999;
+      cursor: not-allowed;
+    }
+
     .date-format {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--text-light);
-      margin-top: 5px;
+      margin-top: 4px;
     }
 
     button {
@@ -121,8 +123,8 @@
       color: white;
       border: none;
       border-radius: var(--border-radius);
-      padding: 12px 25px;
-      font-size: 16px;
+      padding: 10px 20px;
+      font-size: 14px;
       font-weight: 600;
       cursor: pointer;
       transition: var(--transition);
@@ -138,7 +140,7 @@
     }
 
     button i {
-      margin-right: 8px;
+      margin-right: 6px;
     }
 
     .btn-copy {
@@ -152,8 +154,8 @@
 
     .button-group {
       display: flex;
-      gap: 15px;
-      margin-top: 25px;
+      gap: 12px;
+      margin-top: 20px;
     }
 
     .hidden {
@@ -163,22 +165,23 @@
     #output {
       white-space: pre-wrap;
       background: var(--secondary-color);
-      padding: 20px;
+      padding: 15px;
       border-radius: var(--border-radius);
       border-left: 4px solid var(--primary-color);
-      margin-top: 25px;
+      margin-top: 20px;
       font-family: 'Courier New', monospace;
       line-height: 1.5;
-      max-height: 400px;
+      max-height: 350px;
       overflow-y: auto;
+      font-size: 13px;
     }
 
     .status-indicator {
       display: inline-block;
-      width: 12px;
-      height: 12px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
-      margin-right: 8px;
+      margin-right: 6px;
     }
 
     .status-active {
@@ -191,26 +194,35 @@
 
     footer {
       text-align: center;
-      margin-top: 40px;
+      margin-top: 25px;
       color: var(--text-light);
-      font-size: 14px;
+      font-size: 13px;
       width: 100%;
     }
 
     .error-message {
       color: #d32f2f;
-      font-size: 14px;
-      margin-top: 5px;
+      font-size: 12px;
+      margin-top: 4px;
       display: none;
     }
 
     .signature {
       text-align: center;
-      margin-top: 20px;
-      font-style: italic;
+      margin-top: 15px;
       color: var(--text-light);
       border-top: 1px solid var(--accent-color);
-      padding-top: 10px;
+      padding-top: 8px;
+      font-style: normal;
+    }
+
+    .info-message {
+      background-color: #e3f2fd;
+      border-left: 4px solid #2196f3;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+      font-size: 13px;
     }
 
     @media (max-width: 768px) {
@@ -229,7 +241,6 @@
   <div class="container">
     <header>
       <h1>Gerador de Mensagens</h1>
-      <p class="subtitle">Sistema para geração de comunicados técnicos de fibra óptica</p>
     </header>
 
     <div class="card">
@@ -306,7 +317,7 @@
 
       <div class="form-group">
         <label for="encerramento">Data e Hora de Encerramento:</label>
-        <input type="text" id="encerramento" placeholder="dd/mm/aaaa - hh:mm">
+        <input type="text" id="encerramento" placeholder="dd/mm/aaaa - hh:mm" disabled>
         <div class="date-format">Formato obrigatório: dd/mm/aaaa - hh:mm</div>
         <div class="error-message" id="encerramento-error">Formato incorreto. Use: dd/mm/aaaa - hh:mm</div>
       </div>
@@ -416,7 +427,6 @@
     </div>
 
     <footer>
-      <p>Sistema de Geração de Mensagens Técnicas</p>
       <p class="signature">Desenvolvido por N5923221</p>
     </footer>
   </div>
@@ -438,21 +448,27 @@
     function atualizarCamposStatus() {
       const tipo = document.getElementById('status').value;
       const statusCampos = document.getElementById('statusCampos');
+      const encerramentoField = document.getElementById('encerramento');
+      
+      // Habilitar/desabilitar campo de encerramento
+      if (tipo === 'encerramento') {
+        encerramentoField.disabled = false;
+      } else {
+        encerramentoField.disabled = true;
+        encerramentoField.value = '';
+      }
+      
       statusCampos.innerHTML = '';
 
       if (tipo === 'inicial') {
         statusCampos.innerHTML = `
-          <div class="form-group">
-            <label for="tecnico">Técnico:</label>
-            <input type="text" id="tecnico">
+          <div class="info-message">
+            <strong>Informações para Status Inicial:</strong><br>
+            Insira todas as informações em um único campo abaixo.
           </div>
           <div class="form-group">
-            <label for="scan">KM ou Metros Scaneado:</label>
-            <input type="text" id="scan">
-          </div>
-          <div class="form-group">
-            <label for="escalonado">Responsável Escalonado:</label>
-            <input type="text" id="escalonado">
+            <label for="informacoesIniciais">Detalhes do Status Inicial:</label>
+            <textarea id="informacoesIniciais" rows="4" placeholder="Ex: Técnico Thiago acionado. Fibras parando a 50 km. Escalonado coord. Fulano..."></textarea>
           </div>
         `;
       } else if (tipo === 'atualizacao') {
@@ -494,7 +510,14 @@
 
     function gerarMensagem() {
       // Validar campos de data/hora
-      const camposDataHora = ['abertura', 'previsao', 'acionamento', 'encerramento'];
+      const camposDataHora = ['abertura', 'previsao', 'acionamento'];
+      const tipoStatus = document.getElementById('status').value;
+      
+      // Se for encerramento, validar também o campo de encerramento
+      if (tipoStatus === 'encerramento') {
+        camposDataHora.push('encerramento');
+      }
+      
       let dadosValidos = true;
       
       camposDataHora.forEach(campo => {
@@ -513,8 +536,6 @@
       }
 
       const get = id => document.getElementById(id)?.value.toUpperCase() || '';
-      const scanRaw = document.getElementById('scan')?.value || '';
-      const scanKM = scanRaw.toLowerCase().includes('m') ? (parseFloat(scanRaw) / 1000).toFixed(3) + ' KM' : scanRaw.toUpperCase();
 
       let msg = `## ROMPIMENTO DE FIBRA RESIDENCIAL\n`;
       msg += `## TOPOLOGIA: ${get('topologia')}\n`;
@@ -527,19 +548,23 @@
       msg += `## HORÁRIO DE ABERTURA: ${get('abertura')}\n`;
       msg += `## PREVISÃO DO OUTAGE: ${get('previsao')}\n`;
       msg += `## HORÁRIO DE ACIONAMENTO: ${get('acionamento') || 'AGUARDANDO DISPONIBILIDADE TÉCNICA'}\n`;
-      msg += `## HORÁRIO DE ENCERRAMENTO: ${get('encerramento')}\n`;
       
-      const tipoStatus = document.getElementById('status').value;
+      if (tipoStatus === 'encerramento') {
+        msg += `## HORÁRIO DE ENCERRAMENTO: ${get('encerramento')}\n`;
+      }
+      
       if (tipoStatus === 'inicial') {
-        msg += `## TÉCNICO: ${get('tecnico')}\n`;
-        msg += `## SCAN: ${scanKM}\n`;
-        msg += `## RESPONSÁVEL ESCALONADO: ${get('escalonado')}\n`;
+        const informacoes = document.getElementById('informacoesIniciais').value;
+        if (informacoes) {
+          msg += `## INFORMAÇÕES INICIAIS: ${informacoes.toUpperCase()}\n`;
+        }
       } else if (tipoStatus === 'atualizacao') {
         msg += `## STATUS ATUAL: ${get('statusAtual')}\n`;
         msg += `## PERCENTUAL VALIDADO: ${get('validado')}%\n`;
       } else if (tipoStatus === 'encerramento') {
         msg += `## FCA: ${get('fca')}\n`;
         msg += `## ENDEREÇO DO DANO: ${get('enderecoDano')}\n`;
+        msg += `\n✅ SITUAÇÃO NORMALIZADA - SERVIÇO CONCLUÍDO COM SUCESSO`;
       }
       
       document.getElementById('output').textContent = msg;
