@@ -31,11 +31,14 @@
       line-height: 1.6;
       padding: 20px;
       min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     .container {
-      max-width: 900px;
-      margin: 0 auto;
+      max-width: 800px;
+      width: 100%;
     }
 
     header {
@@ -64,6 +67,7 @@
       padding: 25px;
       margin-bottom: 25px;
       transition: var(--transition);
+      width: 100%;
     }
 
     .card:hover {
@@ -106,15 +110,10 @@
       background-color: white;
     }
 
-    .form-row {
-      display: flex;
-      gap: 20px;
-      margin-bottom: 20px;
-    }
-
-    .form-row .form-group {
-      flex: 1;
-      margin-bottom: 0;
+    .date-format {
+      font-size: 12px;
+      color: var(--text-light);
+      margin-top: 5px;
     }
 
     button {
@@ -130,6 +129,7 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      margin-top: 10px;
     }
 
     button:hover {
@@ -194,14 +194,26 @@
       margin-top: 40px;
       color: var(--text-light);
       font-size: 14px;
+      width: 100%;
+    }
+
+    .error-message {
+      color: #d32f2f;
+      font-size: 14px;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .signature {
+      text-align: center;
+      margin-top: 20px;
+      font-style: italic;
+      color: var(--text-light);
+      border-top: 1px solid var(--accent-color);
+      padding-top: 10px;
     }
 
     @media (max-width: 768px) {
-      .form-row {
-        flex-direction: column;
-        gap: 0;
-      }
-      
       .button-group {
         flex-direction: column;
       }
@@ -233,83 +245,79 @@
     <div id="formRompimento" class="card hidden">
       <h2><span class="status-indicator status-active"></span>Rompimento de Fibra Residencial</h2>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="topologia">Topologia:</label>
-          <select id="topologia">
-            <option value="HFC">HFC</option>
-            <option value="GPON">GPON</option>
-          </select>
-        </div>
-        
-        <div class="form-group">
-          <label for="grupo">Grupo:</label>
-          <input type="text" id="grupo">
-        </div>
+      <div class="form-group">
+        <label for="topologia">Topologia:</label>
+        <select id="topologia">
+          <option value="HFC">HFC</option>
+          <option value="GPON">GPON</option>
+        </select>
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="cidade">Cidade:</label>
-          <input type="text" id="cidade">
-        </div>
-        
-        <div class="form-group">
-          <label for="incidente">Incidente:</label>
-          <input type="text" id="incidente">
-        </div>
+      <div class="form-group">
+        <label for="grupo">Grupo:</label>
+        <input type="text" id="grupo">
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="distrito">Área/Distrito:</label>
-          <input type="text" id="distrito">
-        </div>
-        
-        <div class="form-group">
-          <label for="impacto">Impacto:</label>
-          <input type="text" id="impacto">
-        </div>
+      <div class="form-group">
+        <label for="cidade">Cidade:</label>
+        <input type="text" id="cidade">
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="base">Base Afetada:</label>
-          <input type="text" id="base">
-        </div>
-        
-        <div class="form-group">
-          <label for="status">Tipo de Status:</label>
-          <select id="status" onchange="atualizarCamposStatus()">
-            <option value="inicial">Inicial</option>
-            <option value="atualizacao">Atualização</option>
-            <option value="encerramento">Encerramento</option>
-          </select>
-        </div>
+      <div class="form-group">
+        <label for="incidente">Incidente:</label>
+        <input type="text" id="incidente">
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="abertura">Horário de Abertura:</label>
-          <input type="text" id="abertura" placeholder="Ex: 14:30">
-        </div>
-        
-        <div class="form-group">
-          <label for="previsao">Previsão do Outage:</label>
-          <input type="text" id="previsao" placeholder="Ex: 16:00">
-        </div>
+      <div class="form-group">
+        <label for="distrito">Área/Distrito:</label>
+        <input type="text" id="distrito">
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="acionamento">Horário de Acionamento:</label>
-          <input type="text" id="acionamento" placeholder="Se vazio, será 'AGUARDANDO DISPONIBILIDADE TÉCNICA'">
-        </div>
-        
-        <div class="form-group">
-          <label for="encerramento">Horário de Encerramento:</label>
-          <input type="text" id="encerramento" placeholder="Ex: 15:45">
-        </div>
+      <div class="form-group">
+        <label for="impacto">Impacto:</label>
+        <input type="text" id="impacto">
+      </div>
+
+      <div class="form-group">
+        <label for="base">Base Afetada:</label>
+        <input type="text" id="base">
+      </div>
+
+      <div class="form-group">
+        <label for="abertura">Data e Hora de Abertura:</label>
+        <input type="text" id="abertura" placeholder="dd/mm/aaaa - hh:mm">
+        <div class="date-format">Formato obrigatório: dd/mm/aaaa - hh:mm</div>
+        <div class="error-message" id="abertura-error">Formato incorreto. Use: dd/mm/aaaa - hh:mm</div>
+      </div>
+
+      <div class="form-group">
+        <label for="previsao">Data e Hora da Previsão do Outage:</label>
+        <input type="text" id="previsao" placeholder="dd/mm/aaaa - hh:mm">
+        <div class="date-format">Formato obrigatório: dd/mm/aaaa - hh:mm</div>
+        <div class="error-message" id="previsao-error">Formato incorreto. Use: dd/mm/aaaa - hh:mm</div>
+      </div>
+
+      <div class="form-group">
+        <label for="acionamento">Data e Hora de Acionamento:</label>
+        <input type="text" id="acionamento" placeholder="Se vazio, será 'AGUARDANDO DISPONIBILIDADE TÉCNICA'">
+        <div class="date-format">Formato obrigatório: dd/mm/aaaa - hh:mm</div>
+        <div class="error-message" id="acionamento-error">Formato incorreto. Use: dd/mm/aaaa - hh:mm</div>
+      </div>
+
+      <div class="form-group">
+        <label for="encerramento">Data e Hora de Encerramento:</label>
+        <input type="text" id="encerramento" placeholder="dd/mm/aaaa - hh:mm">
+        <div class="date-format">Formato obrigatório: dd/mm/aaaa - hh:mm</div>
+        <div class="error-message" id="encerramento-error">Formato incorreto. Use: dd/mm/aaaa - hh:mm</div>
+      </div>
+
+      <div class="form-group">
+        <label for="status">Tipo de Status:</label>
+        <select id="status" onchange="atualizarCamposStatus()">
+          <option value="inicial">Inicial</option>
+          <option value="atualizacao">Atualização</option>
+          <option value="encerramento">Encerramento</option>
+        </select>
       </div>
 
       <div id="statusCampos"></div>
@@ -323,86 +331,74 @@
     <div id="formManobra" class="card hidden">
       <h2><span class="status-indicator status-active"></span>Manobra de Fibra Residencial</h2>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="topologiaManobra">Topologia:</label>
-          <select id="topologiaManobra">
-            <option value="HFC">HFC</option>
-            <option value="GPON">GPON</option>
-          </select>
-        </div>
-        
-        <div class="form-group">
-          <label for="ticket">Ticket:</label>
-          <input type="text" id="ticket">
-        </div>
+      <div class="form-group">
+        <label for="topologiaManobra">Topologia:</label>
+        <select id="topologiaManobra">
+          <option value="HFC">HFC</option>
+          <option value="GPON">GPON</option>
+        </select>
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="incidenteManobra">Incidente:</label>
-          <input type="text" id="incidenteManobra">
-        </div>
-        
-        <div class="form-group">
-          <label for="cidadeManobra">Cidade:</label>
-          <input type="text" id="cidadeManobra">
-        </div>
+      <div class="form-group">
+        <label for="ticket">Ticket:</label>
+        <input type="text" id="ticket">
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="distritoManobra">Distrito:</label>
-          <input type="text" id="distritoManobra">
-        </div>
-        
-        <div class="form-group">
-          <label for="impactoManobra">Impacto:</label>
-          <input type="text" id="impactoManobra">
-        </div>
+      <div class="form-group">
+        <label for="incidenteManobra">Incidente:</label>
+        <input type="text" id="incidenteManobra">
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="baseManobra">Base Afetada:</label>
-          <input type="text" id="baseManobra">
-        </div>
-        
-        <div class="form-group">
-          <label for="statusManobra">Status:</label>
-          <input type="text" id="statusManobra">
-        </div>
+      <div class="form-group">
+        <label for="cidadeManobra">Cidade:</label>
+        <input type="text" id="cidadeManobra">
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="executor">Executor:</label>
-          <input type="text" id="executor">
-        </div>
-        
-        <div class="form-group">
-          <label for="responsavel">Responsável:</label>
-          <input type="text" id="responsavel">
-        </div>
+      <div class="form-group">
+        <label for="distritoManobra">Distrito:</label>
+        <input type="text" id="distritoManobra">
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="enderecoManobra">Endereço:</label>
-          <input type="text" id="enderecoManobra">
-        </div>
-        
-        <div class="form-group">
-          <label for="proposto">Proposto:</label>
-          <input type="text" id="proposto">
-        </div>
+      <div class="form-group">
+        <label for="impactoManobra">Impacto:</label>
+        <input type="text" id="impactoManobra">
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="inicio">Horário de Início:</label>
-          <input type="text" id="inicio">
-        </div>
+      <div class="form-group">
+        <label for="baseManobra">Base Afetada:</label>
+        <input type="text" id="baseManobra">
+      </div>
+
+      <div class="form-group">
+        <label for="executor">Executor:</label>
+        <input type="text" id="executor">
+      </div>
+
+      <div class="form-group">
+        <label for="responsavel">Responsável:</label>
+        <input type="text" id="responsavel">
+      </div>
+
+      <div class="form-group">
+        <label for="enderecoManobra">Endereço:</label>
+        <input type="text" id="enderecoManobra">
+      </div>
+
+      <div class="form-group">
+        <label for="inicio">Data e Hora de Início:</label>
+        <input type="text" id="inicio" placeholder="dd/mm/aaaa - hh:mm">
+        <div class="date-format">Formato obrigatório: dd/mm/aaaa - hh:mm</div>
+        <div class="error-message" id="inicio-error">Formato incorreto. Use: dd/mm/aaaa - hh:mm</div>
+      </div>
+
+      <div class="form-group">
+        <label for="proposto">Proposto:</label>
+        <input type="text" id="proposto">
+      </div>
+
+      <div class="form-group">
+        <label for="statusManobra">Status:</label>
+        <input type="text" id="statusManobra">
       </div>
 
       <div class="button-group">
@@ -420,7 +416,8 @@
     </div>
 
     <footer>
-      <p>Sistema de Geração de Mensagens Técnicas &copy; 2023</p>
+      <p>Sistema de Geração de Mensagens Técnicas</p>
+      <p class="signature">Desenvolvido por N5923221</p>
     </footer>
   </div>
 
@@ -445,15 +442,13 @@
 
       if (tipo === 'inicial') {
         statusCampos.innerHTML = `
-          <div class="form-row">
-            <div class="form-group">
-              <label for="tecnico">Técnico:</label>
-              <input type="text" id="tecnico">
-            </div>
-            <div class="form-group">
-              <label for="scan">KM ou Metros Scaneado:</label>
-              <input type="text" id="scan">
-            </div>
+          <div class="form-group">
+            <label for="tecnico">Técnico:</label>
+            <input type="text" id="tecnico">
+          </div>
+          <div class="form-group">
+            <label for="scan">KM ou Metros Scaneado:</label>
+            <input type="text" id="scan">
           </div>
           <div class="form-group">
             <label for="escalonado">Responsável Escalonado:</label>
@@ -462,15 +457,13 @@
         `;
       } else if (tipo === 'atualizacao') {
         statusCampos.innerHTML = `
-          <div class="form-row">
-            <div class="form-group">
-              <label for="statusAtual">Status Atual:</label>
-              <input type="text" id="statusAtual">
-            </div>
-            <div class="form-group">
-              <label for="validado">Percentual Validado (%):</label>
-              <input type="text" id="validado">
-            </div>
+          <div class="form-group">
+            <label for="statusAtual">Status Atual:</label>
+            <input type="text" id="statusAtual">
+          </div>
+          <div class="form-group">
+            <label for="validado">Percentual Validado (%):</label>
+            <input type="text" id="validado">
           </div>
         `;
       } else if (tipo === 'encerramento') {
@@ -487,7 +480,38 @@
       }
     }
 
+    function validarFormatoDataHora(dataHora) {
+      const regex = /^\d{2}\/\d{2}\/\d{4} - \d{2}:\d{2}$/;
+      return regex.test(dataHora);
+    }
+
+    function mostrarErro(campoId, mostrar) {
+      const erroElement = document.getElementById(`${campoId}-error`);
+      if (erroElement) {
+        erroElement.style.display = mostrar ? 'block' : 'none';
+      }
+    }
+
     function gerarMensagem() {
+      // Validar campos de data/hora
+      const camposDataHora = ['abertura', 'previsao', 'acionamento', 'encerramento'];
+      let dadosValidos = true;
+      
+      camposDataHora.forEach(campo => {
+        const valor = document.getElementById(campo).value;
+        if (valor && !validarFormatoDataHora(valor)) {
+          mostrarErro(campo, true);
+          dadosValidos = false;
+        } else {
+          mostrarErro(campo, false);
+        }
+      });
+      
+      if (!dadosValidos) {
+        alert('Por favor, corrija os campos de data/hora no formato dd/mm/aaaa - hh:mm');
+        return;
+      }
+
       const get = id => document.getElementById(id)?.value.toUpperCase() || '';
       const scanRaw = document.getElementById('scan')?.value || '';
       const scanKM = scanRaw.toLowerCase().includes('m') ? (parseFloat(scanRaw) / 1000).toFixed(3) + ' KM' : scanRaw.toUpperCase();
@@ -523,6 +547,16 @@
     }
 
     function gerarMensagemManobra() {
+      // Validar campo de data/hora
+      const inicio = document.getElementById('inicio').value;
+      if (inicio && !validarFormatoDataHora(inicio)) {
+        mostrarErro('inicio', true);
+        alert('Por favor, corrija o campo de data/hora no formato dd/mm/aaaa - hh:mm');
+        return;
+      } else {
+        mostrarErro('inicio', false);
+      }
+
       const get = id => document.getElementById(id)?.value.toUpperCase() || '';
 
       let msg = `## MANOBRA DE FIBRA RESIDENCIAL\n`;
