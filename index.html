@@ -269,6 +269,7 @@
         <div class="form-group">
           <label for="topologia">Topologia:</label>
           <select id="topologia">
+            <option value="">-- Selecione o tipo de topologia --</option>
             <option value="HFC">HFC</option>
             <option value="GPON">GPON</option>
           </select>
@@ -353,6 +354,7 @@
       <div class="form-group">
         <label for="topologiaManobra">Topologia:</label>
         <select id="topologiaManobra">
+          <option value="">-- Selecione o tipo de topologia --</option>
           <option value="HFC">HFC</option>
           <option value="GPON">GPON</option>
         </select>
@@ -471,7 +473,7 @@
         statusCampos.innerHTML = `
           <div class="form-group">
             <label for="informacoesIniciais">Informações do Status Inicial:</label>
-            <textarea id="informacoesIniciais" rows="3" placeholder="Equipe acionada, responsável escalonado e outros."></textarea>
+            <textarea id="informacoesIniciais" rows="3"></textarea>
           </div>
         `;
       } else if (tipo === 'atualizacao') {
@@ -559,6 +561,13 @@
     }
 
     function gerarMensagem() {
+      // Verificar se a topologia foi selecionada
+      const topologia = document.getElementById('topologia').value;
+      if (!topologia) {
+        alert('Por favor, selecione o tipo de topologia');
+        return;
+      }
+
       // Verificar se o tipo de status foi selecionado
       const tipoStatus = document.getElementById('status').value;
       if (!tipoStatus) {
@@ -623,6 +632,13 @@
     }
 
     function gerarMensagemManobra() {
+      // Verificar se a topologia foi selecionada
+      const topologiaManobra = document.getElementById('topologiaManobra').value;
+      if (!topologiaManobra) {
+        alert('Por favor, selecione o tipo de topologia');
+        return;
+      }
+
       // Verificar se o tipo de status foi selecionado
       const tipoStatus = document.getElementById('statusManobra').value;
       if (!tipoStatus) {
