@@ -560,6 +560,24 @@
       }
     }
 
+    function verificarAlertaImpacto(topologia, valorImpacto) {
+      // Tenta extrair um número do valor do impacto
+      const numero = parseInt(valorImpacto);
+      
+      if (isNaN(numero)) {
+        return ''; // Retorna vazio se não for um número
+      }
+      
+      // Verifica as condições para cada topologia
+      if (topologia === 'HFC' && numero >= 10) {
+        return ' ⚠️'; // Emoji de atenção para HFC >= 10
+      } else if (topologia === 'GPON' && numero >= 300) {
+        return ' ⚠️'; // Emoji de atenção para GPON >= 300
+      }
+      
+      return ''; // Retorna vazio se não atender às condições
+    }
+
     function gerarMensagem() {
       // Verificar se a topologia foi selecionada
       const topologia = document.getElementById('topologia').value;
@@ -601,13 +619,15 @@
       }
 
       const get = id => document.getElementById(id)?.value.toUpperCase() || '';
+      const impactoValor = document.getElementById('impacto').value;
+      const alertaImpacto = verificarAlertaImpacto(topologia, impactoValor);
 
       let msg = `## ROMPIMENTO DE FIBRA RESIDENCIAL\n`;
       msg += `## TOPOLOGIA: ${get('topologia')}\n`;
       msg += `## INCIDENTE: ${get('incidente')}\n`;
       msg += `## CIDADE/CLUSTER: ${get('cidade')}\n`;
       msg += `## ÁREA/DISTRITO: ${get('distrito')}\n`;
-      msg += `## IMPACTO: ${get('impacto')}\n`;
+      msg += `## IMPACTO: ${get('impacto')}${alertaImpacto}\n`;
       msg += `## BASE AFETADA: ${get('base')}\n`;
       msg += `## DATA E HORA DE ABERTURA: ${get('abertura')}\n`;
       msg += `## PREVISÃO DO OUTAGE: ${get('previsao')}\n`;
@@ -672,6 +692,8 @@
       }
 
       const get = id => document.getElementById(id)?.value.toUpperCase() || '';
+      const impactoManobraValor = document.getElementById('impactoManobra').value;
+      const alertaImpactoManobra = verificarAlertaImpacto(topologiaManobra, impactoManobraValor);
 
       let msg = `## MANOBRA DE FIBRA RESIDENCIAL\n`;
       msg += `## TOPOLOGIA: ${get('topologiaManobra')}\n`;
@@ -679,7 +701,7 @@
       msg += `## INCIDENTE: ${get('incidenteManobra')}\n`;
       msg += `## CIDADE/CLUSTER: ${get('cidadeManobra')}\n`;
       msg += `## ÁREA/DISTRITO: ${get('distritoManobra')}\n`;
-      msg += `## IMPACTO: ${get('impactoManobra')}\n`;
+      msg += `## IMPACTO: ${get('impactoManobra')}${alertaImpactoManobra}\n`;
       msg += `## BASE AFETADA: ${get('baseManobra')}\n`;
       msg += `## RESPONSÁVEL: ${get('responsavelManobra')}\n`;
       msg += `## EXECUTOR: ${get('executorManobra')}\n`;
