@@ -229,6 +229,67 @@
       width: 100%;
     }
 
+    .incident-management {
+      background: #e3f2fd;
+      border-left: 4px solid #2196f3;
+    }
+
+    .incident-list {
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      border-radius: var(--border-radius);
+      margin-top: 10px;
+    }
+
+    .incident-item {
+      padding: 10px 15px;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .incident-item:hover {
+      background-color: #f5f5f5;
+    }
+
+    .incident-item.active {
+      background-color: var(--secondary-color);
+      font-weight: bold;
+    }
+
+    .incident-id {
+      font-weight: bold;
+      color: var(--primary-dark);
+    }
+
+    .incident-info {
+      font-size: 14px;
+      color: var(--text-light);
+    }
+
+    .delete-incident {
+      color: #f44336;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 5px;
+      border-radius: 3px;
+    }
+
+    .delete-incident:hover {
+      background-color: #ffebee;
+    }
+
+    .no-incidents {
+      padding: 15px;
+      text-align: center;
+      color: var(--text-light);
+      font-style: italic;
+    }
+
     @media (max-width: 768px) {
       .form-row {
         flex-direction: column;
@@ -251,6 +312,29 @@
     <header>
       <h1>Gerador de Mensagens</h1>
     </header>
+
+    <!-- Gerenciamento de Incidentes -->
+    <div class="card incident-management">
+      <h2><i class="fas fa-tasks"></i> Gerenciamento de Incidentes</h2>
+      <div class="form-group">
+        <label for="incidenteId">ID do Incidente:</label>
+        <div class="form-row">
+          <div class="form-group" style="flex: 2;">
+            <input type="text" id="incidenteId" placeholder="Ex: INC-2023-001">
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <button onclick="carregarIncidente()"><i class="fas fa-folder-open"></i> Carregar</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label>Incidentes Ativos:</label>
+        <div class="incident-list" id="incidentList">
+          <!-- Lista de incidentes será preenchida dinamicamente -->
+        </div>
+      </div>
+    </div>
 
     <div class="card">
       <label for="tipoMensagem">Escolha o tipo de mensagem:</label>
@@ -344,6 +428,7 @@
 
       <div class="button-group">
         <button onclick="gerarMensagem()"><i class="fas fa-file-alt"></i> Gerar Mensagem de Rompimento</button>
+        <button onclick="salvarIncidente()" class="btn-copy"><i class="fas fa-save"></i> Salvar Incidente</button>
       </div>
     </div>
 
@@ -432,6 +517,7 @@
 
       <div class="button-group">
         <button onclick="gerarMensagemManobra()"><i class="fas fa-file-alt"></i> Gerar Mensagem de Manobra</button>
+        <button onclick="salvarIncidente()" class="btn-copy"><i class="fas fa-save"></i> Salvar Incidente</button>
       </div>
     </div>
 
@@ -450,6 +536,203 @@
   </div>
 
   <script>
+    // Sistema de gerenciamento de incidentes
+    let incidentesAtivos = JSON.parse(localStorage.getItem('incidentesAtivos')) || {};
+    let incidenteAtual = null;
+
+    // Inicializar a lista de incidentes
+    document.addEventListener('DOMContentLoaded', function() {
+      atualizarListaIncidentes();
+    });
+
+    function atualizarListaIncidentes() {
+      const incidentList = document.getElementById('incidentList');
+      incidentList.innerHTML = '';
+
+      const incidentes = Object.keys(incidentesAtivos);
+      
+      if (incidentes.length === 0) {
+        incidentList.innerHTML = '<div class="no-incidents">Nenhum incidente ativo</div>';
+        return;
+      }
+
+      incidentes.forEach(id => {
+        const incidente = incidentesAtivos[id];
+        const item = document.createElement('div');
+        item.className = `incident-item ${incidenteAtual === id ? 'active' : ''}`;
+        item.innerHTML = `
+          <div>
+            <div class="incident-id">${id}</div>
+            <div class="incident-info">${incidente.tipo} - ${incidente.incidente}</div>
+          </div>
+          <button class="delete-incident" onclick="excluirIncidente('${id}')"><i class="fas fa-trash"></i></button>
+        `;
+        item.addEventListener('click', () => carregarIncidentePorId(id));
+        incidentList.appendChild(item);
+      });
+    }
+
+    function salvarIncidente() {
+      const tipoMensagem = document.getElementById('tipoMensagem').value;
+      if (!tipoMensagem) {
+        alert('Por favor, selecione um tipo de mensagem primeiro');
+        return;
+      }
+
+      let incidenteId = document.getElementById('incidenteId').value.trim();
+      if (!incidenteId) {
+        incidenteId = prompt('Digite um ID para este incidente:');
+        if (!incidenteId) return;
+        document.getElementById('incidenteId').value = incidenteId;
+      }
+
+      const dados = coletarDadosFormulario(tipoMensagem);
+      if (!dados) return;
+
+      incidentesAtivos[incidenteId] = {
+        tipo: tipoMensagem,
+        ...dados,
+        dataCriacao: new Date().toISOString()
+      };
+
+      localStorage.setItem('incidentesAtivos', JSON.stringify(incidentesAtivos));
+      incidenteAtual = incidenteId;
+      atualizarListaIncidentes();
+      
+      alert(`Incidente ${incidenteId} salvo com sucesso!`);
+    }
+
+    function coletarDadosFormulario(tipo) {
+      if (tipo === 'rompimento') {
+        return {
+          topologia: document.getElementById('topologia').value,
+          incidente: document.getElementById('incidente').value,
+          cidade: document.getElementById('cidade').value,
+          distrito: document.getElementById('distrito').value,
+          impacto: document.getElementById('impacto').value,
+          base: document.getElementById('base').value,
+          abertura: document.getElementById('abertura').value,
+          previsao: document.getElementById('previsao').value,
+          acionamento: document.getElementById('acionamento').value
+        };
+      } else if (tipo === 'manobra') {
+        return {
+          topologiaManobra: document.getElementById('topologiaManobra').value,
+          ticketManobra: document.getElementById('ticketManobra').value,
+          incidenteManobra: document.getElementById('incidenteManobra').value,
+          cidadeManobra: document.getElementById('cidadeManobra').value,
+          distritoManobra: document.getElementById('distritoManobra').value,
+          impactoManobra: document.getElementById('impactoManobra').value,
+          baseManobra: document.getElementById('baseManobra').value,
+          responsavelManobra: document.getElementById('responsavelManobra').value,
+          executorManobra: document.getElementById('executorManobra').value,
+          enderecoManobra: document.getElementById('enderecoManobra').value,
+          propostoManobra: document.getElementById('propostoManobra').value
+        };
+      }
+      return null;
+    }
+
+    function carregarIncidente() {
+      const incidenteId = document.getElementById('incidenteId').value.trim();
+      if (!incidenteId) {
+        alert('Por favor, digite um ID de incidente');
+        return;
+      }
+
+      carregarIncidentePorId(incidenteId);
+    }
+
+    function carregarIncidentePorId(incidenteId) {
+      if (!incidentesAtivos[incidenteId]) {
+        alert('Incidente não encontrado');
+        return;
+      }
+
+      const incidente = incidentesAtivos[incidenteId];
+      document.getElementById('incidenteId').value = incidenteId;
+      
+      // Selecionar o tipo de mensagem correto
+      document.getElementById('tipoMensagem').value = incidente.tipo;
+      mostrarFormulario();
+
+      // Preencher os campos do formulário
+      if (incidente.tipo === 'rompimento') {
+        document.getElementById('topologia').value = incidente.topologia || '';
+        document.getElementById('incidente').value = incidente.incidente || '';
+        document.getElementById('cidade').value = incidente.cidade || '';
+        document.getElementById('distrito').value = incidente.distrito || '';
+        document.getElementById('impacto').value = incidente.impacto || '';
+        document.getElementById('base').value = incidente.base || '';
+        document.getElementById('abertura').value = incidente.abertura || '';
+        document.getElementById('previsao').value = incidente.previsao || '';
+        document.getElementById('acionamento').value = incidente.acionamento || '';
+      } else if (incidente.tipo === 'manobra') {
+        document.getElementById('topologiaManobra').value = incidente.topologiaManobra || '';
+        document.getElementById('ticketManobra').value = incidente.ticketManobra || '';
+        document.getElementById('incidenteManobra').value = incidente.incidenteManobra || '';
+        document.getElementById('cidadeManobra').value = incidente.cidadeManobra || '';
+        document.getElementById('distritoManobra').value = incidente.distritoManobra || '';
+        document.getElementById('impactoManobra').value = incidente.impactoManobra || '';
+        document.getElementById('baseManobra').value = incidente.baseManobra || '';
+        document.getElementById('responsavelManobra').value = incidente.responsavelManobra || '';
+        document.getElementById('executorManobra').value = incidente.executorManobra || '';
+        document.getElementById('enderecoManobra').value = incidente.enderecoManobra || '';
+        document.getElementById('propostoManobra').value = incidente.propostoManobra || '';
+      }
+
+      incidenteAtual = incidenteId;
+      atualizarListaIncidentes();
+      alert(`Incidente ${incidenteId} carregado com sucesso!`);
+    }
+
+    function excluirIncidente(incidenteId) {
+      if (confirm(`Tem certeza que deseja excluir o incidente ${incidenteId}?`)) {
+        delete incidentesAtivos[incidenteId];
+        localStorage.setItem('incidentesAtivos', JSON.stringify(incidentesAtivos));
+        
+        if (incidenteAtual === incidenteId) {
+          incidenteAtual = null;
+          document.getElementById('incidenteId').value = '';
+          limparFormularios();
+        }
+        
+        atualizarListaIncidentes();
+        alert(`Incidente ${incidenteId} excluído com sucesso!`);
+      }
+    }
+
+    function limparFormularios() {
+      // Limpar formulário de rompimento
+      document.getElementById('topologia').value = '';
+      document.getElementById('incidente').value = '';
+      document.getElementById('cidade').value = '';
+      document.getElementById('distrito').value = '';
+      document.getElementById('impacto').value = '';
+      document.getElementById('base').value = '';
+      document.getElementById('abertura').value = '';
+      document.getElementById('previsao').value = '';
+      document.getElementById('acionamento').value = '';
+      document.getElementById('status').value = '';
+      document.getElementById('statusCampos').innerHTML = '';
+
+      // Limpar formulário de manobra
+      document.getElementById('topologiaManobra').value = '';
+      document.getElementById('ticketManobra').value = '';
+      document.getElementById('incidenteManobra').value = '';
+      document.getElementById('cidadeManobra').value = '';
+      document.getElementById('distritoManobra').value = '';
+      document.getElementById('impactoManobra').value = '';
+      document.getElementById('baseManobra').value = '';
+      document.getElementById('responsavelManobra').value = '';
+      document.getElementById('executorManobra').value = '';
+      document.getElementById('enderecoManobra').value = '';
+      document.getElementById('propostoManobra').value = '';
+      document.getElementById('statusManobra').value = '';
+      document.getElementById('statusCamposManobra').innerHTML = '';
+    }
+
+    // Funções existentes (mantidas do código original)
     function mostrarFormulario() {
       const tipo = document.getElementById('tipoMensagem').value;
       document.getElementById('formRompimento').classList.add('hidden');
@@ -543,7 +826,6 @@
             <label for="fcaManobra">FCA (Fato, Causa, Ação):</label>
             <textarea id="fcaManobra" rows="3"></textarea>
           </div>
-          <!-- Removido o campo "Endereço do Dano" para manobra no encerramento -->
         `;
       }
     }
@@ -561,21 +843,19 @@
     }
 
     function verificarAlertaImpacto(topologia, valorImpacto) {
-      // Tenta extrair um número do valor do impacto
       const numero = parseInt(valorImpacto);
       
       if (isNaN(numero)) {
-        return ''; // Retorna vazio se não for um número
+        return '';
       }
       
-      // Verifica as condições para cada topologia
       if (topologia === 'HFC' && numero >= 10) {
-        return ' ⚠️'; // Emoji de atenção para HFC >= 10
+        return ' ⚠️';
       } else if (topologia === 'GPON' && numero >= 300) {
-        return ' ⚠️'; // Emoji de atenção para GPON >= 300
+        return ' ⚠️';
       }
       
-      return ''; // Retorna vazio se não atender às condições
+      return '';
     }
 
     function gerarMensagem() {
@@ -596,7 +876,6 @@
       // Validar campos de data/hora
       const camposDataHora = ['abertura', 'previsao', 'acionamento'];
       
-      // Se for encerramento, validar também o campo de encerramento
       if (tipoStatus === 'encerramento') {
         camposDataHora.push('encerramento');
       }
@@ -644,110 +923,4 @@
         msg += `## DATA E HORA DE ENCERRAMENTO: ${get('encerramento')}\n`;
         msg += `## FCA (FATO, CAUSA, AÇÃO): ${get('fca')}\n`;
         msg += `## ENDEREÇO DO DANO: ${get('enderecoDano')}\n`;
-        msg += `\n✅ SITUAÇÃO NORMALIZADA - SERVIÇO CONCLUÍDO COM SUCESSO`;
-      }
-      
-      document.getElementById('output').textContent = msg;
-      document.getElementById('outputContainer').classList.remove('hidden');
-    }
-
-    function gerarMensagemManobra() {
-      // Verificar se a topologia foi selecionada
-      const topologiaManobra = document.getElementById('topologiaManobra').value;
-      if (!topologiaManobra) {
-        alert('Por favor, selecione o tipo de topologia');
-        return;
-      }
-
-      // Verificar se o tipo de status foi selecionado
-      const tipoStatus = document.getElementById('statusManobra').value;
-      if (!tipoStatus) {
-        alert('Por favor, selecione o tipo de status');
-        return;
-      }
-
-      // Validar campos de data/hora
-      const camposDataHora = [];
-      
-      // Se for encerramento, validar também o campo de encerramento
-      if (tipoStatus === 'encerramento') {
-        camposDataHora.push('encerramentoManobra');
-      }
-      
-      let dadosValidos = true;
-      
-      camposDataHora.forEach(campo => {
-        const valor = document.getElementById(campo).value;
-        if (valor && !validarFormatoDataHora(valor)) {
-          mostrarErro(campo, true);
-          dadosValidos = false;
-        } else {
-          mostrarErro(campo, false);
-        }
-      });
-      
-      if (!dadosValidos) {
-        alert('Por favor, corrija os campos de data/hora no formato dd/mm/aaaa - hh:mm');
-        return;
-      }
-
-      const get = id => document.getElementById(id)?.value.toUpperCase() || '';
-      const impactoManobraValor = document.getElementById('impactoManobra').value;
-      const alertaImpactoManobra = verificarAlertaImpacto(topologiaManobra, impactoManobraValor);
-
-      let msg = `## MANOBRA DE FIBRA RESIDENCIAL\n`;
-      msg += `## TOPOLOGIA: ${get('topologiaManobra')}\n`;
-      msg += `## TICKET DA MANOBRA: ${get('ticketManobra')}\n`;
-      msg += `## INCIDENTE: ${get('incidenteManobra')}\n`;
-      msg += `## CIDADE/CLUSTER: ${get('cidadeManobra')}\n`;
-      msg += `## ÁREA/DISTRITO: ${get('distritoManobra')}\n`;
-      msg += `## IMPACTO: ${get('impactoManobra')}${alertaImpactoManobra}\n`;
-      msg += `## BASE AFETADA: ${get('baseManobra')}\n`;
-      msg += `## RESPONSÁVEL: ${get('responsavelManobra')}\n`;
-      msg += `## EXECUTOR: ${get('executorManobra')}\n`;
-      msg += `## ENDEREÇO: ${get('enderecoManobra')}\n`;
-      msg += `## PROPOSTO: ${get('propostoManobra')}\n`;
-      
-      msg += `## TIPO DE STATUS: ${document.getElementById('statusManobra').options[document.getElementById('statusManobra').selectedIndex].text.toUpperCase()}\n`;
-      
-      if (tipoStatus === 'inicial') {
-        msg += `## INFORMAÇÕES INICIAIS: ${get('informacoesIniciaisManobra')}\n`;
-      } else if (tipoStatus === 'atualizacao') {
-        msg += `## STATUS ATUAL: ${get('statusAtualManobra')}\n`;
-        msg += `## PERCENTUAL VALIDADO: ${get('validadoManobra')}%\n`;
-      } else if (tipoStatus === 'encerramento') {
-        msg += `## DATA E HORA DE ENCERRAMENTO: ${get('encerramentoManobra')}\n`;
-        msg += `## FCA (FATO, CAUSA, AÇÃO): ${get('fcaManobra')}\n`;
-        // Removido o endereço do dano para manobra no encerramento
-        msg += `\n✅ SITUAÇÃO NORMALIZADA - SERVIÇO CONCLUÍDO COM SUCESSO`;
-      }
-      
-      document.getElementById('output').textContent = msg;
-      document.getElementById('outputContainer').classList.remove('hidden');
-    }
-
-    function copiarMensagem() {
-      const output = document.getElementById('output');
-      const textarea = document.createElement('textarea');
-      textarea.value = output.textContent;
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textarea);
-      
-      // Feedback visual
-      const btn = document.querySelector('.btn-copy');
-      const originalText = btn.innerHTML;
-      btn.innerHTML = '<i class="fas fa-check"></i> Copiado!';
-      setTimeout(() => {
-        btn.innerHTML = originalText;
-      }, 2000);
-    }
-
-    function limparMensagem() {
-      document.getElementById('output').textContent = '';
-      document.getElementById('outputContainer').classList.add('hidden');
-    }
-  </script>
-</body>
-</html>
+        msg += `\n✅ SITUAÇÃO NORMALIZADA - SERVIÇO CONCLUÍ
