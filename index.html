@@ -162,10 +162,6 @@
             background-color: #4caf50;
         }
 
-        .status-completed {
-            background-color: #2196f3;
-        }
-
         /* GERENCIAMENTO DE INCIDENTES */
         .incident-management {
             background: #e3f2fd;
@@ -200,16 +196,9 @@
             font-weight: bold;
         }
 
-        .incident-item.completed {
-            background: #e3f2fd;
-        }
-
         .incident-id {
             font-weight: bold;
             color: #1b5e20;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
         .incident-info {
@@ -369,25 +358,25 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="abertura">Data e Hora de Abertura:</label>
-                    <input type="text" id="abertura" placeholder="dd/mm/aaaa hh:mm">
-                    <div class="date-format">Formato obrigatório: dd/mm/aaaa hh:mm</div>
-                    <div class="error-message" id="abertura-error">Formato incorreto. Use: dd/mm/aaaa hh:mm</div>
+                    <input type="text" id="abertura" placeholder="dd/mm/aaaa - hh:mm">
+                    <div class="date-format">Formato obrigatório: dd/mm/aaaa - hh:mm</div>
+                    <div class="error-message" id="abertura-error">Formato incorreto. Use: dd/mm/aaaa - hh:mm</div>
                 </div>
                 
                 <div class="form-group">
                     <label for="previsao">Previsão do Outage:</label>
-                    <input type="text" id="previsao" placeholder="dd/mm/aaaa hh:mm">
-                    <div class="date-format">Formato obrigatório: dd/mm/aaaa hh:mm</div>
-                    <div class="error-message" id="previsao-error">Formato incorreto. Use: dd/mm/aaaa hh:mm</div>
+                    <input type="text" id="previsao" placeholder="dd/mm/aaaa - hh:mm">
+                    <div class="date-format">Formato obrigatório: dd/mm/aaaa - hh:mm</div>
+                    <div class="error-message" id="previsao-error">Formato incorreto. Use: dd/mm/aaaa - hh:mm</div>
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
                     <label for="acionamento">Data e Hora de Acionamento:</label>
-                    <input type="text" id="acionamento" placeholder="dd/mm/aaaa hh:mm">
+                    <input type="text" id="acionamento" placeholder="dd/mm/aaaa - hh:mm">
                     <div class="date-format">Se vazio, será 'Aguardando disponibilidade técnica'</div>
-                    <div class="error-message" id="acionamento-error">Formato incorreto. Use: dd/mm/aaaa hh:mm</div>
+                    <div class="error-message" id="acionamento-error">Formato incorreto. Use: dd/mm/aaaa - hh:mm</div>
                 </div>
                 
                 <div class="form-group">
@@ -537,13 +526,10 @@
             incidentes.forEach(id => {
                 const incidente = incidentesAtivos[id];
                 const item = document.createElement('div');
-                item.className = `incident-item ${incidenteAtual === id ? 'active' : ''} ${incidente.encerrado ? 'completed' : ''}`;
-                
-                const emojiConcluido = incidente.encerrado ? '✅ ' : '';
-                
+                item.className = `incident-item ${incidenteAtual === id ? 'active' : ''}`;
                 item.innerHTML = `
                     <div>
-                        <div class="incident-id">${emojiConcluido}${id}</div>
+                        <div class="incident-id">${id}</div>
                         <div class="incident-info">${incidente.tipo} - ${incidente.incidente || incidente.incidenteManobra}</div>
                     </div>
                     <button class="delete-incident" onclick="excluirIncidente('${id}')">
@@ -572,14 +558,9 @@
             const dados = coletarDadosFormulario(tipoMensagem);
             if (!dados) return;
 
-            // Manter o status de encerramento se já existir
-            const incidenteExistente = incidentesAtivos[incidenteId];
-            const encerrado = incidenteExistente ? incidenteExistente.encerrado : false;
-
             incidentesAtivos[incidenteId] = {
                 tipo: tipoMensagem,
                 ...dados,
-                encerrado: encerrado,
                 dataCriacao: new Date().toISOString()
             };
 
@@ -762,9 +743,9 @@
                 statusCampos.innerHTML = `
                     <div class="form-group">
                         <label for="encerramento">Data e Hora de Encerramento:</label>
-                        <input type="text" id="encerramento" placeholder="dd/mm/aaaa hh:mm">
-                        <div class="date-format">Formato obrigatório: dd/mm/aaaa hh:mm</div>
-                        <div class="error-message" id="encerramento-error">Formato incorreto. Use: dd/mm/aaaa hh:mm</div>
+                        <input type="text" id="encerramento" placeholder="dd/mm/aaaa - hh:mm">
+                        <div class="date-format">Formato obrigatório: dd/mm/aaaa - hh:mm</div>
+                        <div class="error-message" id="encerramento-error">Formato incorreto. Use: dd/mm/aaaa - hh:mm</div>
                     </div>
                     <div class="form-group">
                         <label for="fca">FCA (Fato, Causa, Ação):</label>
@@ -806,9 +787,9 @@
                 statusCampos.innerHTML = `
                     <div class="form-group">
                         <label for="encerramentoManobra">Data e Hora de Encerramento:</label>
-                        <input type="text" id="encerramentoManobra" placeholder="dd/mm/aaaa hh:mm">
-                        <div class="date-format">Formato obrigatório: dd/mm/aaaa hh:mm</div>
-                        <div class="error-message" id="encerramentoManobra-error">Formato incorreto. Use: dd/mm/aaaa hh:mm</div>
+                        <input type="text" id="encerramentoManobra" placeholder="dd/mm/aaaa - hh:mm">
+                        <div class="date-format">Formato obrigatório: dd/mm/aaaa - hh:mm</div>
+                        <div class="error-message" id="encerramentoManobra-error">Formato incorreto. Use: dd/mm/aaaa - hh:mm</div>
                     </div>
                     <div class="form-group">
                         <label for="fcaManobra">FCA (Fato, Causa, Ação):</label>
@@ -819,7 +800,7 @@
         }
 
         function validarFormatoDataHora(dataHora) {
-            const regex = /^\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}$/;
+            const regex = /^\d{2}\/\d{2}\/\d{4} - \d{2}:\d{2}$/;
             return regex.test(dataHora);
         }
 
@@ -881,7 +862,7 @@
             });
             
             if (!dadosValidos) {
-                alert('Por favor, corrija os campos de data/hora no formato dd/mm/aaaa hh:mm');
+                alert('Por favor, corrija os campos de data/hora no formato dd/mm/aaaa - hh:mm');
                 return;
             }
 
@@ -912,7 +893,107 @@
                 msg += `## FCA (FATO, CAUSA, AÇÃO): ${get('fca')}\n`;
                 msg += `## ENDEREÇO DO DANO: ${get('enderecoDano')}\n`;
                 msg += `\n✅ SITUAÇÃO NORMALIZADA - SERVIÇO CONCLUÍDO COM SUCESSO`;
-                
-                // Perguntar se deseja deletar do histórico
-                setTimeout(() => {
-                    const deletar = confirm('Mensagem de encerramento gerada
+            }
+            
+            document.getElementById('output').textContent = msg;
+            document.getElementById('outputContainer').classList.remove('hidden');
+        }
+
+        function gerarMensagemManobra() {
+            // Verificar se a topologia foi selecionada
+            const topologiaManobra = document.getElementById('topologiaManobra').value;
+            if (!topologiaManobra) {
+                alert('Por favor, selecione o tipo de topologia');
+                return;
+            }
+
+            // Verificar se o tipo de status foi selecionado
+            const tipoStatus = document.getElementById('statusManobra').value;
+            if (!tipoStatus) {
+                alert('Por favor, selecione o tipo de status');
+                return;
+            }
+
+            // Validar campos de data/hora
+            const camposDataHora = [];
+            
+            if (tipoStatus === 'encerramento') {
+                camposDataHora.push('encerramentoManobra');
+            }
+            
+            let dadosValidos = true;
+            
+            camposDataHora.forEach(campo => {
+                const valor = document.getElementById(campo).value;
+                if (valor && !validarFormatoDataHora(valor)) {
+                    mostrarErro(campo, true);
+                    dadosValidos = false;
+                } else {
+                    mostrarErro(campo, false);
+                }
+            });
+            
+            if (!dadosValidos) {
+                alert('Por favor, corrija os campos de data/hora no formato dd/mm/aaaa - hh:mm');
+                return;
+            }
+
+            const get = id => document.getElementById(id)?.value.toUpperCase() || '';
+            const impactoManobraValor = document.getElementById('impactoManobra').value;
+            const alertaImpactoManobra = verificarAlertaImpacto(topologiaManobra, impactoManobraValor);
+
+            let msg = `## MANOBRA DE FIBRA RESIDENCIAL\n`;
+            msg += `## TOPOLOGIA: ${get('topologiaManobra')}\n`;
+            msg += `## TICKET DA MANOBRA: ${get('ticketManobra')}\n`;
+            msg += `## INCIDENTE: ${get('incidenteManobra')}\n`;
+            msg += `## CIDADE/CLUSTER: ${get('cidadeManobra')}\n`;
+            msg += `## ÁREA/DISTRITO: ${get('distritoManobra')}\n`;
+            msg += `## IMPACTO: ${get('impactoManobra')}${alertaImpactoManobra}\n`;
+            msg += `## BASE AFETADA: ${get('baseManobra')}\n`;
+            msg += `## RESPONSÁVEL: ${get('responsavelManobra')}\n`;
+            msg += `## EXECUTOR: ${get('executorManobra')}\n`;
+            msg += `## ENDEREÇO: ${get('enderecoManobra')}\n`;
+            msg += `## PROPOSTO: ${get('propostoManobra')}\n`;
+            
+            msg += `## TIPO DE STATUS: ${document.getElementById('statusManobra').options[document.getElementById('statusManobra').selectedIndex].text.toUpperCase()}\n`;
+            
+            if (tipoStatus === 'inicial') {
+                msg += `## INFORMAÇÕES INICIAIS: ${get('informacoesIniciaisManobra')}\n`;
+            } else if (tipoStatus === 'atualizacao') {
+                msg += `## STATUS ATUAL: ${get('statusAtualManobra')}\n`;
+                msg += `## PERCENTUAL VALIDADO: ${get('validadoManobra')}%\n`;
+            } else if (tipoStatus === 'encerramento') {
+                msg += `## DATA E HORA DE ENCERRAMENTO: ${get('encerramentoManobra')}\n`;
+                msg += `## FCA (FATO, CAUSA, AÇÃO): ${get('fcaManobra')}\n`;
+                msg += `\n✅ SITUAÇÃO NORMALIZADA - SERVIÇO CONCLUÍDO COM SUCESSO`;
+            }
+            
+            document.getElementById('output').textContent = msg;
+            document.getElementById('outputContainer').classList.remove('hidden');
+        }
+
+        function copiarMensagem() {
+            const output = document.getElementById('output');
+            const textarea = document.createElement('textarea');
+            textarea.value = output.textContent;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            
+            // Feedback visual
+            const btn = document.querySelector('.btn-copy');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i> Copiado!';
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+            }, 2000);
+        }
+
+        function limparMensagem() {
+            document.getElementById('output').textContent = '';
+            document.getElementById('outputContainer').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
