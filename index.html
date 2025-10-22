@@ -563,7 +563,7 @@
         item.innerHTML = `
           <div>
             <div class="incident-id">${id}</div>
-            <div class="incident-info">${incidente.tipo} - ${incidente.incidente}</div>
+            <div class="incident-info">${incidente.tipo} - ${incidente.incidente || incidente.incidenteManobra}</div>
           </div>
           <button class="delete-incident" onclick="excluirIncidente('${id}')"><i class="fas fa-trash"></i></button>
         `;
@@ -923,4 +923,4 @@
         msg += `## DATA E HORA DE ENCERRAMENTO: ${get('encerramento')}\n`;
         msg += `## FCA (FATO, CAUSA, AÇÃO): ${get('fca')}\n`;
         msg += `## ENDEREÇO DO DANO: ${get('enderecoDano')}\n`;
-        msg += `\n✅ SITUAÇÃO NORMALIZADA - SERVIÇO CONCLUÍ
+        msg += `\n✅ SITUAÇÃO NORMALIZADA -
