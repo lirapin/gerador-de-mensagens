@@ -21,3 +21,6 @@
     document.getElementById('output').innerText = msg;
   }
 </script>
+// Armazena todos os incidentes ativos
+let incidentesAtivos = JSON.parse(localStorage.getItem('incidentesAtivos')) || {};
+let incidenteAtual = null;  // Incidente sendo trabalhado no momento
