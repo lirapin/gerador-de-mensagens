@@ -4,7 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gerador de Mensagens - Fibra Óptica</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
+    /* Reset e Variáveis CSS */
     :root {
       --primary-color: #2e7d32;
       --primary-light: #4caf50;
@@ -24,6 +26,7 @@
       padding: 0;
     }
 
+    /* Estilos Gerais */
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(135deg, #f1f8e9, #e8f5e9);
@@ -31,14 +34,12 @@
       line-height: 1.6;
       padding: 20px;
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
     }
 
     .container {
       max-width: 900px;
       width: 100%;
+      margin: 0 auto;
     }
 
     header {
@@ -55,6 +56,7 @@
       letter-spacing: 1px;
     }
 
+    /* Cards */
     .card {
       background: white;
       border-radius: var(--border-radius);
@@ -77,6 +79,7 @@
       font-size: 22px;
     }
 
+    /* Formulários */
     .form-group {
       margin-bottom: 20px;
     }
@@ -105,18 +108,13 @@
       background-color: white;
     }
 
-    input:disabled {
-      background-color: #f0f0f0;
-      color: #999;
-      cursor: not-allowed;
-    }
-
     .date-format {
       font-size: 12px;
       color: var(--text-light);
       margin-top: 5px;
     }
 
+    /* Botões */
     button {
       background: var(--primary-color);
       color: white;
@@ -157,8 +155,9 @@
       margin-top: 25px;
     }
 
+    /* Utilitários */
     .hidden {
-      display: none;
+      display: none !important;
     }
 
     #output {
@@ -190,6 +189,7 @@
       background-color: #bdbdbd;
     }
 
+    /* Footer */
     footer {
       text-align: center;
       margin-top: 40px;
@@ -214,6 +214,7 @@
       font-style: normal;
     }
 
+    /* Layout */
     .form-row {
       display: flex;
       gap: 20px;
@@ -229,6 +230,7 @@
       width: 100%;
     }
 
+    /* Gerenciamento de Incidentes */
     .incident-management {
       background: #e3f2fd;
       border-left: 4px solid #2196f3;
@@ -240,6 +242,7 @@
       border: 1px solid #ddd;
       border-radius: var(--border-radius);
       margin-top: 10px;
+      background: white;
     }
 
     .incident-item {
@@ -249,6 +252,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      transition: var(--transition);
     }
 
     .incident-item:hover {
@@ -277,6 +281,7 @@
       cursor: pointer;
       padding: 5px;
       border-radius: 3px;
+      transition: var(--transition);
     }
 
     .delete-incident:hover {
@@ -290,7 +295,12 @@
       font-style: italic;
     }
 
+    /* Responsividade */
     @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+      
       .form-row {
         flex-direction: column;
         gap: 0;
@@ -303,14 +313,17 @@
       button {
         width: 100%;
       }
+      
+      .card {
+        padding: 15px;
+      }
     }
   </style>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
   <div class="container">
     <header>
-      <h1>Gerador de Mensagens</h1>
+      <h1><i class="fas fa-broadcast-tower"></i> Gerador de Mensagens - Fibra Óptica</h1>
     </header>
 
     <!-- Gerenciamento de Incidentes -->
@@ -331,23 +344,26 @@
       <div class="form-group">
         <label>Incidentes Ativos:</label>
         <div class="incident-list" id="incidentList">
-          <!-- Lista de incidentes será preenchida dinamicamente -->
+          <div class="no-incidents">Nenhum incidente ativo</div>
         </div>
       </div>
     </div>
 
+    <!-- Seleção do Tipo de Mensagem -->
     <div class="card">
-      <label for="tipoMensagem">Escolha o tipo de mensagem:</label>
-      <select id="tipoMensagem" onchange="mostrarFormulario()">
-        <option value="">-- Selecione --</option>
-        <option value="rompimento">Rompimento de Fibra Residencial</option>
-        <option value="manobra">Manobra de Fibra Residencial</option>
-      </select>
+      <div class="form-group">
+        <label for="tipoMensagem">Escolha o tipo de mensagem:</label>
+        <select id="tipoMensagem" onchange="mostrarFormulario()">
+          <option value="">-- Selecione --</option>
+          <option value="rompimento">Rompimento de Fibra Residencial</option>
+          <option value="manobra">Manobra de Fibra Residencial</option>
+        </select>
+      </div>
     </div>
 
     <!-- Formulário de Rompimento -->
     <div id="formRompimento" class="card hidden">
-      <h2><span class="status-indicator status-active"></span>Rompimento de Fibra Residencial</h2>
+      <h2><span class="status-indicator status-active"></span> Rompimento de Fibra Residencial</h2>
 
       <div class="form-row">
         <div class="form-group">
@@ -361,7 +377,7 @@
         
         <div class="form-group">
           <label for="incidente">Incidente:</label>
-          <input type="text" id="incidente">
+          <input type="text" id="incidente" placeholder="Número do incidente">
         </div>
       </div>
 
@@ -373,19 +389,19 @@
         
         <div class="form-group">
           <label for="distrito">Área/Distrito:</label>
-          <input type="text" id="distrito">
+          <input type="text" id="distrito" placeholder="Zona Norte">
         </div>
       </div>
 
       <div class="form-row">
         <div class="form-group">
           <label for="impacto">Impacto:</label>
-          <input type="text" id="impacto">
+          <input type="text" id="impacto" placeholder="Número de clientes afetados">
         </div>
         
         <div class="form-group">
           <label for="base">Base Afetada:</label>
-          <input type="text" id="base">
+          <input type="text" id="base" placeholder="Base 05">
         </div>
       </div>
 
@@ -434,7 +450,7 @@
 
     <!-- Formulário de Manobra -->
     <div id="formManobra" class="card hidden">
-      <h2><span class="status-indicator status-active"></span>Manobra de Fibra Residencial</h2>
+      <h2><span class="status-indicator status-active"></span> Manobra de Fibra Residencial</h2>
 
       <div class="form-group">
         <label for="topologiaManobra">Topologia:</label>
@@ -448,12 +464,12 @@
       <div class="form-row">
         <div class="form-group">
           <label for="ticketManobra">Ticket da Manobra:</label>
-          <input type="text" id="ticketManobra">
+          <input type="text" id="ticketManobra" placeholder="Número do ticket">
         </div>
         
         <div class="form-group">
           <label for="incidenteManobra">Incidente:</label>
-          <input type="text" id="incidenteManobra">
+          <input type="text" id="incidenteManobra" placeholder="Número do incidente">
         </div>
       </div>
 
@@ -465,42 +481,42 @@
         
         <div class="form-group">
           <label for="distritoManobra">Área/Distrito:</label>
-          <input type="text" id="distritoManobra">
+          <input type="text" id="distritoManobra" placeholder="Zona Sul">
         </div>
       </div>
 
       <div class="form-row">
         <div class="form-group">
           <label for="impactoManobra">Impacto:</label>
-          <input type="text" id="impactoManobra">
+          <input type="text" id="impactoManobra" placeholder="Número de clientes afetados">
         </div>
         
         <div class="form-group">
           <label for="baseManobra">Base Afetada:</label>
-          <input type="text" id="baseManobra">
+          <input type="text" id="baseManobra" placeholder="Base 03">
         </div>
       </div>
 
       <div class="form-row">
         <div class="form-group">
           <label for="responsavelManobra">Responsável:</label>
-          <input type="text" id="responsavelManobra">
+          <input type="text" id="responsavelManobra" placeholder="Nome do responsável">
         </div>
         
         <div class="form-group">
           <label for="executorManobra">Executor:</label>
-          <input type="text" id="executorManobra">
+          <input type="text" id="executorManobra" placeholder="Nome do executor">
         </div>
       </div>
 
       <div class="form-group">
         <label for="enderecoManobra">Endereço:</label>
-        <input type="text" id="enderecoManobra">
+        <input type="text" id="enderecoManobra" placeholder="Endereço completo">
       </div>
 
       <div class="form-group">
         <label for="propostoManobra">Proposto:</label>
-        <input type="text" id="propostoManobra">
+        <input type="text" id="propostoManobra" placeholder="Proposta de solução">
       </div>
 
       <div class="form-group">
@@ -521,6 +537,7 @@
       </div>
     </div>
 
+    <!-- Output da Mensagem Gerada -->
     <div id="outputContainer" class="card hidden">
       <h2><i class="fas fa-file-code"></i> Mensagem Gerada</h2>
       <div id="output"></div>
@@ -756,18 +773,18 @@
         statusCampos.innerHTML = `
           <div class="form-group">
             <label for="informacoesIniciais">Informações do Status Inicial:</label>
-            <textarea id="informacoesIniciais" rows="3"></textarea>
+            <textarea id="informacoesIniciais" rows="3" placeholder="Descreva a situação inicial do incidente"></textarea>
           </div>
         `;
       } else if (tipo === 'atualizacao') {
         statusCampos.innerHTML = `
           <div class="form-group">
             <label for="statusAtual">Status Atual:</label>
-            <input type="text" id="statusAtual">
+            <input type="text" id="statusAtual" placeholder="Descreva o status atual">
           </div>
           <div class="form-group">
             <label for="validado">Percentual Validado (%):</label>
-            <input type="text" id="validado">
+            <input type="text" id="validado" placeholder="Ex: 50">
           </div>
         `;
       } else if (tipo === 'encerramento') {
@@ -780,11 +797,11 @@
           </div>
           <div class="form-group">
             <label for="fca">FCA (Fato, Causa, Ação):</label>
-            <textarea id="fca" rows="3"></textarea>
+            <textarea id="fca" rows="3" placeholder="Descreva o fato, causa e ação tomada"></textarea>
           </div>
           <div class="form-group">
             <label for="enderecoDano">Endereço do Dano:</label>
-            <input type="text" id="enderecoDano">
+            <input type="text" id="enderecoDano" placeholder="Endereço onde ocorreu o dano">
           </div>
         `;
       }
@@ -800,18 +817,18 @@
         statusCampos.innerHTML = `
           <div class="form-group">
             <label for="informacoesIniciaisManobra">Informações do Status Inicial:</label>
-            <textarea id="informacoesIniciaisManobra" rows="3"></textarea>
+            <textarea id="informacoesIniciaisManobra" rows="3" placeholder="Descreva a situação inicial da manobra"></textarea>
           </div>
         `;
       } else if (tipo === 'atualizacao') {
         statusCampos.innerHTML = `
           <div class="form-group">
             <label for="statusAtualManobra">Status Atual:</label>
-            <input type="text" id="statusAtualManobra">
+            <input type="text" id="statusAtualManobra" placeholder="Descreva o status atual">
           </div>
           <div class="form-group">
             <label for="validadoManobra">Percentual Validado (%):</label>
-            <input type="text" id="validadoManobra">
+            <input type="text" id="validadoManobra" placeholder="Ex: 75">
           </div>
         `;
       } else if (tipo === 'encerramento') {
@@ -824,7 +841,7 @@
           </div>
           <div class="form-group">
             <label for="fcaManobra">FCA (Fato, Causa, Ação):</label>
-            <textarea id="fcaManobra" rows="3"></textarea>
+            <textarea id="fcaManobra" rows="3" placeholder="Descreva o fato, causa e ação tomada"></textarea>
           </div>
         `;
       }
