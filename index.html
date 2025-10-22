@@ -162,6 +162,10 @@
             background-color: #4caf50;
         }
 
+        .status-completed {
+            background-color: #2196f3;
+        }
+
         /* GERENCIAMENTO DE INCIDENTES */
         .incident-management {
             background: #e3f2fd;
@@ -196,9 +200,16 @@
             font-weight: bold;
         }
 
+        .incident-item.completed {
+            background: #e3f2fd;
+        }
+
         .incident-id {
             font-weight: bold;
             color: #1b5e20;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .incident-info {
@@ -358,25 +369,25 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="abertura">Data e Hora de Abertura:</label>
-                    <input type="text" id="abertura" placeholder="dd/mm/aaaa - hh:mm">
-                    <div class="date-format">Formato obrigatório: dd/mm/aaaa - hh:mm</div>
-                    <div class="error-message" id="abertura-error">Formato incorreto. Use: dd/mm/aaaa - hh:mm</div>
+                    <input type="text" id="abertura" placeholder="dd/mm/aaaa hh:mm">
+                    <div class="date-format">Formato obrigatório: dd/mm/aaaa hh:mm</div>
+                    <div class="error-message" id="abertura-error">Formato incorreto. Use: dd/mm/aaaa hh:mm</div>
                 </div>
                 
                 <div class="form-group">
                     <label for="previsao">Previsão do Outage:</label>
-                    <input type="text" id="previsao" placeholder="dd/mm/aaaa - hh:mm">
-                    <div class="date-format">Formato obrigatório: dd/mm/aaaa - hh:mm</div>
-                    <div class="error-message" id="previsao-error">Formato incorreto. Use: dd/mm/aaaa - hh:mm</div>
+                    <input type="text" id="previsao" placeholder="dd/mm/aaaa hh:mm">
+                    <div class="date-format">Formato obrigatório: dd/mm/aaaa hh:mm</div>
+                    <div class="error-message" id="previsao-error">Formato incorreto. Use: dd/mm/aaaa hh:mm</div>
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
                     <label for="acionamento">Data e Hora de Acionamento:</label>
-                    <input type="text" id="acionamento" placeholder="dd/mm/aaaa - hh:mm">
+                    <input type="text" id="acionamento" placeholder="dd/mm/aaaa hh:mm">
                     <div class="date-format">Se vazio, será 'Aguardando disponibilidade técnica'</div>
-                    <div class="error-message" id="acionamento-error">Formato incorreto. Use: dd/mm/aaaa - hh:mm</div>
+                    <div class="error-message" id="acionamento-error">Formato incorreto. Use: dd/mm/aaaa hh:mm</div>
                 </div>
                 
                 <div class="form-group">
@@ -526,10 +537,13 @@
             incidentes.forEach(id => {
                 const incidente = incidentesAtivos[id];
                 const item = document.createElement('div');
-                item.className = `incident-item ${incidenteAtual === id ? 'active' : ''}`;
+                item.className = `incident-item ${incidenteAtual === id ? 'active' : ''} ${incidente.encerrado ? 'completed' : ''}`;
+                
+                const emojiConcluido = incidente.encerrado ? '✅ ' : '';
+                
                 item.innerHTML = `
                     <div>
-                        <div class="incident-id">${id}</div>
+                        <div class="incident-id">${emojiConcluido}${id}</div>
                         <div class="incident-info">${incidente.tipo} - ${incidente.incidente || incidente.incidenteManobra}</div>
                     </div>
                     <button class="delete-incident" onclick="excluirIncidente('${id}')">
@@ -558,9 +572,14 @@
             const dados = coletarDadosFormulario(tipoMensagem);
             if (!dados) return;
 
+            // Manter o status de encerramento se já existir
+            const incidenteExistente = incidentesAtivos[incidenteId];
+            const encerrado = incidenteExistente ? incidenteExistente.encerrado : false;
+
             incidentesAtivos[incidenteId] = {
                 tipo: tipoMensagem,
                 ...dados,
+                encerrado: encerrado,
                 dataCriacao: new Date().toISOString()
             };
 
@@ -743,9 +762,9 @@
                 statusCampos.innerHTML = `
                     <div class="form-group">
                         <label for="encerramento">Data e Hora de Encerramento:</label>
-                        <input type="text" id="encerramento" placeholder="dd/mm/aaaa - hh:mm">
-                        <div class="date-format">Formato obrigatório: dd/mm/aaaa - hh:mm</div>
-                        <div class="error-message" id="encerramento-error">Formato incorreto. Use: dd/mm/aaaa - hh:mm</div>
+                        <input type="text" id="encerramento" placeholder="dd/mm/aaaa hh:mm">
+                        <div class="date-format">Formato obrigatório: dd/mm/aaaa hh:mm</div>
+                        <div class="error-message" id="encerramento-error">Formato incorreto. Use: dd/mm/aaaa hh:mm</div>
                     </div>
                     <div class="form-group">
                         <label for="fca">FCA (Fato, Causa, Ação):</label>
@@ -787,9 +806,9 @@
                 statusCampos.innerHTML = `
                     <div class="form-group">
                         <label for="encerramentoManobra">Data e Hora de Encerramento:</label>
-                        <input type="text" id="encerramentoManobra" placeholder="dd/mm/aaaa - hh:mm">
-                        <div class="date-format">Formato obrigatório: dd/mm/aaaa - hh:mm</div>
-                        <div class="error-message" id="encerramentoManobra-error">Formato incorreto. Use: dd/mm/aaaa - hh:mm</div>
+                        <input type="text" id="encerramentoManobra" placeholder="dd/mm/aaaa hh:mm">
+                        <div class="date-format">Formato obrigatório: dd/mm/aaaa hh:mm</div>
+                        <div class="error-message" id="encerramentoManobra-error">Formato incorreto. Use: dd/mm/aaaa hh:mm</div>
                     </div>
                     <div class="form-group">
                         <label for="fcaManobra">FCA (Fato, Causa, Ação):</label>
@@ -800,7 +819,7 @@
         }
 
         function validarFormatoDataHora(dataHora) {
-            const regex = /^\d{2}\/\d{2}\/\d{4} - \d{2}:\d{2}$/;
+            const regex = /^\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}$/;
             return regex.test(dataHora);
         }
 
@@ -862,7 +881,7 @@
             });
             
             if (!dadosValidos) {
-                alert('Por favor, corrija os campos de data/hora no formato dd/mm/aaaa - hh:mm');
+                alert('Por favor, corrija os campos de data/hora no formato dd/mm/aaaa hh:mm');
                 return;
             }
 
@@ -893,6 +912,25 @@
                 msg += `## FCA (FATO, CAUSA, AÇÃO): ${get('fca')}\n`;
                 msg += `## ENDEREÇO DO DANO: ${get('enderecoDano')}\n`;
                 msg += `\n✅ SITUAÇÃO NORMALIZADA - SERVIÇO CONCLUÍDO COM SUCESSO`;
+                
+                // Perguntar se deseja deletar do histórico
+                setTimeout(() => {
+                    const deletar = confirm('Mensagem de encerramento gerada! Deseja marcar este incidente como concluído e removê-lo do histórico?');
+                    const incidenteId = document.getElementById('incidenteId').value.trim();
+                    
+                    if (deletar && incidenteId && incidentesAtivos[incidenteId]) {
+                        // Marcar como encerrado em vez de deletar
+                        incidentesAtivos[incidenteId].encerrado = true;
+                        localStorage.setItem('incidentesAtivos', JSON.stringify(incidentesAtivos));
+                        atualizarListaIncidentes();
+                        alert('Incidente marcado como concluído! ✅');
+                    } else if (incidenteId && incidentesAtivos[incidenteId]) {
+                        // Apenas marcar como encerrado
+                        incidentesAtivos[incidenteId].encerrado = true;
+                        localStorage.setItem('incidentesAtivos', JSON.stringify(incidentesAtivos));
+                        atualizarListaIncidentes();
+                    }
+                }, 500);
             }
             
             document.getElementById('output').textContent = msg;
@@ -934,7 +972,7 @@
             });
             
             if (!dadosValidos) {
-                alert('Por favor, corrija os campos de data/hora no formato dd/mm/aaaa - hh:mm');
+                alert('Por favor, corrija os campos de data/hora no formato dd/mm/aaaa hh:mm');
                 return;
             }
 
@@ -966,6 +1004,25 @@
                 msg += `## DATA E HORA DE ENCERRAMENTO: ${get('encerramentoManobra')}\n`;
                 msg += `## FCA (FATO, CAUSA, AÇÃO): ${get('fcaManobra')}\n`;
                 msg += `\n✅ SITUAÇÃO NORMALIZADA - SERVIÇO CONCLUÍDO COM SUCESSO`;
+                
+                // Perguntar se deseja deletar do histórico
+                setTimeout(() => {
+                    const deletar = confirm('Mensagem de encerramento gerada! Deseja marcar este incidente como concluído e removê-lo do histórico?');
+                    const incidenteId = document.getElementById('incidenteId').value.trim();
+                    
+                    if (deletar && incidenteId && incidentesAtivos[incidenteId]) {
+                        // Marcar como encerrado em vez de deletar
+                        incidentesAtivos[incidenteId].encerrado = true;
+                        localStorage.setItem('incidentesAtivos', JSON.stringify(incidentesAtivos));
+                        atualizarListaIncidentes();
+                        alert('Incidente marcado como concluído! ✅');
+                    } else if (incidenteId && incidentesAtivos[incidenteId]) {
+                        // Apenas marcar como encerrado
+                        incidentesAtivos[incidenteId].encerrado = true;
+                        localStorage.setItem('incidentesAtivos', JSON.stringify(incidentesAtivos));
+                        atualizarListaIncidentes();
+                    }
+                }, 500);
             }
             
             document.getElementById('output').textContent = msg;
