@@ -31,6 +31,7 @@
             text-align: center;
             margin-bottom: 30px;
             padding: 20px;
+            position: relative;
         }
 
         h1 {
@@ -133,6 +134,28 @@
             margin-top: 25px;
         }
 
+        /* Botão de atualização discreto */
+        .refresh-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: transparent;
+            color: #1b5e20;
+            border: 2px solid #1b5e20;
+            padding: 8px 12px;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .refresh-btn:hover {
+            background: #1b5e20;
+            color: white;
+        }
+
         /* UTILITÁRIOS */
         .hidden {
             display: none !important;
@@ -162,23 +185,36 @@
             background-color: #4caf50;
         }
 
-        /* GERENCIAMENTO DE INCIDENTES */
+        /* GERENCIAMENTO DE INCIDENTES - Layout mais compacto */
         .incident-management {
             background: #e3f2fd;
             border-left-color: #2196f3;
+        }
+
+        .incident-management-compact {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .incident-management-compact .form-group {
+            flex: 1;
+            min-width: 200px;
+            margin-bottom: 0;
         }
 
         .incident-list {
             border: 2px solid #ddd;
             border-radius: 6px;
             margin-top: 10px;
-            max-height: 200px;
+            max-height: 150px; /* Reduzido de 200px para 150px */
             overflow-y: auto;
             background: white;
         }
 
         .incident-item {
-            padding: 12px;
+            padding: 10px 12px; /* Reduzido de 12px para 10px */
             border-bottom: 1px solid #eee;
             cursor: pointer;
             display: flex;
@@ -202,7 +238,7 @@
         }
 
         .incident-info {
-            font-size: 14px;
+            font-size: 13px; /* Reduzido de 14px para 13px */
             color: #666;
         }
 
@@ -210,13 +246,14 @@
             background: #f44336;
             color: white;
             border: none;
-            padding: 5px 10px;
+            padding: 4px 8px; /* Reduzido de 5px 10px para 4px 8px */
             border-radius: 4px;
             cursor: pointer;
+            font-size: 12px;
         }
 
         .no-incidents {
-            padding: 20px;
+            padding: 15px; /* Reduzido de 20px para 15px */
             text-align: center;
             color: #666;
             font-style: italic;
@@ -267,6 +304,17 @@
             button {
                 width: 100%;
             }
+            
+            .incident-management-compact {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .refresh-btn {
+                position: static;
+                margin-top: 10px;
+                align-self: flex-end;
+            }
         }
     </style>
 </head>
@@ -274,20 +322,22 @@
     <div class="container">
         <header>
             <h1><i class="fas fa-broadcast-tower"></i> Gerador de Mensagens</h1>
+            <!-- Botão discreto para atualizar a página -->
+            <button class="refresh-btn" onclick="window.location.reload()" title="Atualizar página">
+                <i class="fas fa-sync-alt"></i>
+            </button>
         </header>
 
-        <!-- Gerenciamento de Incidentes -->
+        <!-- Gerenciamento de Incidentes - Layout mais compacto -->
         <div class="card incident-management">
             <h2><i class="fas fa-tasks"></i> Gerenciamento de Incidentes</h2>
-            <div class="form-group">
-                <label for="incidenteId">ID do Incidente:</label>
-                <div class="form-row">
-                    <div class="form-group" style="flex: 2;">
-                        <input type="text" id="incidenteId" placeholder="Ex: INC-2023-001">
-                    </div>
-                    <div class="form-group" style="flex: 1;">
-                        <button onclick="carregarIncidente()"><i class="fas fa-folder-open"></i> Carregar</button>
-                    </div>
+            <div class="incident-management-compact">
+                <div class="form-group">
+                    <label for="incidenteId">Insira o número do incidente!</label>
+                    <input type="text" id="incidenteId" placeholder="Ex: INC-2023-001">
+                </div>
+                <div class="form-group">
+                    <button onclick="carregarIncidente()"><i class="fas fa-folder-open"></i> Carregar</button>
                 </div>
             </div>
             
@@ -358,25 +408,25 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="abertura">Data e Hora de Abertura:</label>
-                    <input type="text" id="abertura" placeholder="dd/mm/aaaa - hh:mm">
-                    <div class="date-format">Formato obrigatório: dd/mm/aaaa - hh:mm</div>
-                    <div class="error-message" id="abertura-error">Formato incorreto. Use: dd/mm/aaaa - hh:mm</div>
+                    <input type="text" id="abertura" placeholder="dd/mm/aaaa hh:mm">
+                    <div class="date-format">Formato obrigatório: dd/mm/aaaa hh:mm</div>
+                    <div class="error-message" id="abertura-error">Formato incorreto. Use: dd/mm/aaaa hh:mm</div>
                 </div>
                 
                 <div class="form-group">
                     <label for="previsao">Previsão do Outage:</label>
-                    <input type="text" id="previsao" placeholder="dd/mm/aaaa - hh:mm">
-                    <div class="date-format">Formato obrigatório: dd/mm/aaaa - hh:mm</div>
-                    <div class="error-message" id="previsao-error">Formato incorreto. Use: dd/mm/aaaa - hh:mm</div>
+                    <input type="text" id="previsao" placeholder="dd/mm/aaaa hh:mm">
+                    <div class="date-format">Formato obrigatório: dd/mm/aaaa hh:mm</div>
+                    <div class="error-message" id="previsao-error">Formato incorreto. Use: dd/mm/aaaa hh:mm</div>
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
                     <label for="acionamento">Data e Hora de Acionamento:</label>
-                    <input type="text" id="acionamento" placeholder="dd/mm/aaaa - hh:mm">
+                    <input type="text" id="acionamento" placeholder="dd/mm/aaaa hh:mm">
                     <div class="date-format">Se vazio, será 'Aguardando disponibilidade técnica'</div>
-                    <div class="error-message" id="acionamento-error">Formato incorreto. Use: dd/mm/aaaa - hh:mm</div>
+                    <div class="error-message" id="acionamento-error">Formato incorreto. Use: dd/mm/aaaa hh:mm</div>
                 </div>
                 
                 <div class="form-group">
@@ -550,7 +600,7 @@
 
             let incidenteId = document.getElementById('incidenteId').value.trim();
             if (!incidenteId) {
-                incidenteId = prompt('Digite um ID para este incidente:');
+                incidenteId = prompt('Insira o número do incidente:');
                 if (!incidenteId) return;
                 document.getElementById('incidenteId').value = incidenteId;
             }
@@ -605,7 +655,7 @@
         function carregarIncidente() {
             const incidenteId = document.getElementById('incidenteId').value.trim();
             if (!incidenteId) {
-                alert('Por favor, digite um ID de incidente');
+                alert('Insira o número do incidente!');
                 return;
             }
 
@@ -743,9 +793,9 @@
                 statusCampos.innerHTML = `
                     <div class="form-group">
                         <label for="encerramento">Data e Hora de Encerramento:</label>
-                        <input type="text" id="encerramento" placeholder="dd/mm/aaaa - hh:mm">
-                        <div class="date-format">Formato obrigatório: dd/mm/aaaa - hh:mm</div>
-                        <div class="error-message" id="encerramento-error">Formato incorreto. Use: dd/mm/aaaa - hh:mm</div>
+                        <input type="text" id="encerramento" placeholder="dd/mm/aaaa hh:mm">
+                        <div class="date-format">Formato obrigatório: dd/mm/aaaa hh:mm</div>
+                        <div class="error-message" id="encerramento-error">Formato incorreto. Use: dd/mm/aaaa hh:mm</div>
                     </div>
                     <div class="form-group">
                         <label for="fca">FCA (Fato, Causa, Ação):</label>
@@ -787,9 +837,9 @@
                 statusCampos.innerHTML = `
                     <div class="form-group">
                         <label for="encerramentoManobra">Data e Hora de Encerramento:</label>
-                        <input type="text" id="encerramentoManobra" placeholder="dd/mm/aaaa - hh:mm">
-                        <div class="date-format">Formato obrigatório: dd/mm/aaaa - hh:mm</div>
-                        <div class="error-message" id="encerramentoManobra-error">Formato incorreto. Use: dd/mm/aaaa - hh:mm</div>
+                        <input type="text" id="encerramentoManobra" placeholder="dd/mm/aaaa hh:mm">
+                        <div class="date-format">Formato obrigatório: dd/mm/aaaa hh:mm</div>
+                        <div class="error-message" id="encerramentoManobra-error">Formato incorreto. Use: dd/mm/aaaa hh:mm</div>
                     </div>
                     <div class="form-group">
                         <label for="fcaManobra">FCA (Fato, Causa, Ação):</label>
@@ -799,8 +849,9 @@
             }
         }
 
+        // Alteração: Atualizado para validar o novo formato de data
         function validarFormatoDataHora(dataHora) {
-            const regex = /^\d{2}\/\d{2}\/\d{4} - \d{2}:\d{2}$/;
+            const regex = /^\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}$/;
             return regex.test(dataHora);
         }
 
@@ -862,7 +913,7 @@
             });
             
             if (!dadosValidos) {
-                alert('Por favor, corrija os campos de data/hora no formato dd/mm/aaaa - hh:mm');
+                alert('Por favor, corrija os campos de data/hora no formato dd/mm/aaaa hh:mm');
                 return;
             }
 
@@ -934,7 +985,7 @@
             });
             
             if (!dadosValidos) {
-                alert('Por favor, corrija os campos de data/hora no formato dd/mm/aaaa - hh:mm');
+                alert('Por favor, corrija os campos de data/hora no formato dd/mm/aaaa hh:mm');
                 return;
             }
 
