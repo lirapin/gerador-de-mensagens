@@ -334,10 +334,10 @@
             <div class="incident-management-compact">
                 <div class="form-group">
                     <label for="incidenteId">Insira o número do incidente!</label>
-                    <input type="text" id="incidenteId" placeholder="Ex: INC-2023-001">
+                    <input type="text" id="incidenteId" placeholder="">
                 </div>
                 <div class="form-group">
-                    <button onclick="carregarIncidente()"><i class="fas fa-folder-open"></i> Carregar</button>
+                    <button onclick="carregarIncidente()"><i class="fas fa-search"></i> Carregar</button>
                 </div>
             </div>
             
@@ -396,12 +396,12 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="impacto">Impacto:</label>
-                    <input type="text" id="impacto">
+                    <input type="text" id="impacto" oninput="validarCampoNumerico(this)">
                 </div>
                 
                 <div class="form-group">
                     <label for="base">Base Afetada:</label>
-                    <input type="text" id="base">
+                    <input type="text" id="base" oninput="validarCampoNumerico(this)">
                 </div>
             </div>
 
@@ -488,12 +488,12 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="impactoManobra">Impacto:</label>
-                    <input type="text" id="impactoManobra">
+                    <input type="text" id="impactoManobra" oninput="validarCampoNumerico(this)">
                 </div>
                 
                 <div class="form-group">
                     <label for="baseManobra">Base Afetada:</label>
-                    <input type="text" id="baseManobra">
+                    <input type="text" id="baseManobra" oninput="validarCampoNumerico(this)">
                 </div>
             </div>
 
@@ -560,6 +560,17 @@
         // Inicializar a lista de incidentes
         document.addEventListener('DOMContentLoaded', function() {
             atualizarListaIncidentes();
+            
+            // Adicionar eventos para converter para maiúsculas
+            const inputs = document.querySelectorAll('input, textarea');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    this.value = this.value.toUpperCase();
+                    
+                    // Corrigir múltiplos pontos
+                    this.value = this.value.replace(/\.{2,}/g, '.');
+                });
+            });
         });
 
         function atualizarListaIncidentes() {
@@ -751,6 +762,30 @@
             document.getElementById('statusCamposManobra').innerHTML = '';
         }
 
+        // Função para validar campos numéricos
+        function validarCampoNumerico(input) {
+            input.value = input.value.replace(/[^0-9]/g, '');
+        }
+
+        // Função para verificar necessidade de escalonamento
+        function verificarEscalonamento(topologia, valorImpacto) {
+            const numero = parseInt(valorImpacto);
+            
+            if (isNaN(numero)) {
+                return false;
+            }
+            
+            if (topologia === 'HFC' && numero >= 10) {
+                alert('ATENÇÃO: Este caso precisa de escalonamento! Impacto HFC ≥ 10');
+                return true;
+            } else if (topologia === 'GPON' && numero >= 300) {
+                alert('ATENÇÃO: Este caso precisa de escalonamento! Impacto GPON ≥ 300');
+                return true;
+            }
+            
+            return false;
+        }
+
         // Funções existentes (mantidas do código original)
         function mostrarFormulario() {
             const tipo = document.getElementById('tipoMensagem').value;
@@ -893,6 +928,10 @@
                 return;
             }
 
+            // Verificar necessidade de escalonamento
+            const impactoValor = document.getElementById('impacto').value;
+            verificarEscalonamento(topologia, impactoValor);
+
             // Validar campos de data/hora
             const camposDataHora = ['abertura', 'previsao', 'acionamento'];
             
@@ -918,7 +957,6 @@
             }
 
             const get = id => document.getElementById(id)?.value.toUpperCase() || '';
-            const impactoValor = document.getElementById('impacto').value;
             const alertaImpacto = verificarAlertaImpacto(topologia, impactoValor);
 
             let msg = `## ROMPIMENTO DE FIBRA RESIDENCIAL\n`;
