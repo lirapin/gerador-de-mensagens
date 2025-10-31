@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -639,57 +638,160 @@
     </div>
 
     <script>
+        // =============================================
+        // CONFIGURAÇÃO DO JSONBIN.IO - EDITAR AQUI!
+        // =============================================
+        const JSONBIN_CONFIG = {
+            binId: '690480d2ae596e708f39dcad',
+            accessKey: '$2a$10$iCHPT/M2gqtqeGsBZ/AdCeE.Y/yihLCb5IKZbACZrafL8/.fIuRAW'
+        };
+
+        // =============================================
+        // SERVIÇO JSONBIN.IO (COMPARTILHAMENTO)
+        // =============================================
+        class JSONBinService {
+            constructor() {
+                this.baseUrl = 'https://api.jsonbin.io/v3/b';
+            }
+
+            async salvarIncidente(incidenteId, tipo, dados) {
+                try {
+                    const todosIncidentes = await this.buscarTodosIncidentes();
+                    const incidenteExistente = todosIncidentes.find(inc => inc.incidente_id === incidenteId);
+                    
+                    if (incidenteExistente) {
+                        incidenteExistente.dados = dados;
+                        incidenteExistente.data_atualizacao = new Date().toISOString();
+                    } else {
+                        todosIncidentes.push({
+                            incidente_id: incidenteId,
+                            tipo: tipo,
+                            dados: dados,
+                            criado_por: this.getUsuario(),
+                            data_criacao: new Date().toISOString(),
+                            data_atualizacao: new Date().toISOString()
+                        });
+                    }
+                    
+                    await this.salvarTodosIncidentes(todosIncidentes);
+                    return true;
+                } catch (error) {
+                    console.error('Erro JSONBin:', error);
+                    this.salvarLocalmente(incidenteId, tipo, dados);
+                    throw error;
+                }
+            }
+
+            async carregarIncidente(incidenteId) {
+                try {
+                    const todosIncidentes = await this.buscarTodosIncidentes();
+                    const incidente = todosIncidentes.find(inc => inc.incidente_id === incidenteId);
+                    if (!incidente) throw new Error('Incidente não encontrado');
+                    return incidente;
+                } catch (error) {
+                    console.error('Erro JSONBin:', error);
+                    return this.carregarLocalmente(incidenteId);
+                }
+            }
+
+            async listarIncidentesAtivos() {
+                try {
+                    return await this.buscarTodosIncidentes();
+                } catch (error) {
+                    console.error('Erro JSONBin:', error);
+                    return this.listarLocalmente();
+                }
+            }
+
+            async excluirIncidente(incidenteId) {
+                try {
+                    const todosIncidentes = await this.buscarTodosIncidentes();
+                    const novosIncidentes = todosIncidentes.filter(inc => inc.incidente_id !== incidenteId);
+                    await this.salvarTodosIncidentes(novosIncidentes);
+                    return true;
+                } catch (error) {
+                    console.error('Erro JSONBin:', error);
+                    this.excluirLocalmente(incidenteId);
+                    throw error;
+                }
+            }
+
+            async buscarTodosIncidentes() {
+                const response = await fetch(`${this.baseUrl}/${JSONBIN_CONFIG.binId}/latest`, {
+                    headers: {
+                        'X-Master-Key': JSONBIN_CONFIG.accessKey,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                if (!response.ok) throw new Error('Erro ao buscar incidentes');
+                const data = await response.json();
+                return data.record.incidentes || [];
+            }
+
+            async salvarTodosIncidentes(incidentes) {
+                const response = await fetch(`${this.baseUrl}/${JSONBIN_CONFIG.binId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'X-Master-Key': JSONBIN_CONFIG.accessKey,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ incidentes: incidentes })
+                });
+                if (!response.ok) throw new Error('Erro ao salvar incidentes');
+                return await response.json();
+            }
+
+            salvarLocalmente(incidenteId, tipo, dados) {
+                const incidentes = JSON.parse(localStorage.getItem('incidentes_locais') || '{}');
+                incidentes[incidenteId] = { tipo, dados, dataCriacao: new Date().toISOString() };
+                localStorage.setItem('incidentes_locais', JSON.stringify(incidentes));
+            }
+
+            carregarLocalmente(incidenteId) {
+                const incidentes = JSON.parse(localStorage.getItem('incidentes_locais') || '{}');
+                if (incidentes[incidenteId]) {
+                    return { incidente_id: incidenteId, ...incidentes[incidenteId] };
+                }
+                throw new Error('Incidente não encontrado localmente');
+            }
+
+            listarLocalmente() {
+                const incidentes = JSON.parse(localStorage.getItem('incidentes_locais') || '{}');
+                return Object.keys(incidentes).map(id => ({
+                    incidente_id: id,
+                    ...incidentes[id]
+                }));
+            }
+
+            excluirLocalmente(incidenteId) {
+                const incidentes = JSON.parse(localStorage.getItem('incidentes_locais') || '{}');
+                delete incidentes[incidenteId];
+                localStorage.setItem('incidentes_locais', JSON.stringify(incidentes));
+            }
+
+            getUsuario() {
+                let usuario = localStorage.getItem('usuario_incidentes');
+                if (!usuario) {
+                    usuario = prompt('Digite seu nome para identificar seus incidentes:') || 'Usuário';
+                    localStorage.setItem('usuario_incidentes', usuario);
+                }
+                return usuario;
+            }
+        }
+
+        const jsonBinService = new JSONBinService();
+
+        // =============================================
+        // VARIÁVEIS GLOBAIS
+        // =============================================
         let incidentesAtivos = {};
         let incidenteAtual = null;
 
-        document.addEventListener('DOMContentLoaded', function() {
-            atualizarListaIncidentes();
-            
-            const inputs = document.querySelectorAll('input, textarea');
-            inputs.forEach(input => {
-                if (input.type !== 'radio' && input.type !== 'checkbox') {
-                    input.addEventListener('input', function() {
-                        this.value = this.value.toUpperCase();
-                        this.value = this.value.replace(/\.{2,}/g, '.');
-                    });
-                }
-            });
-        });
+        // =============================================
+        // FUNÇÕES PRINCIPAIS MODIFICADAS
+        // =============================================
 
-        function atualizarListaIncidentes() {
-            const incidentList = document.getElementById('incidentList');
-            incidentList.innerHTML = '';
-
-            const incidentes = Object.keys(incidentesAtivos);
-            
-            if (incidentes.length === 0) {
-                incidentList.innerHTML = '<div class="no-incidents">Nenhum incidente ativo</div>';
-                return;
-            }
-
-            incidentes.forEach(id => {
-                const incidente = incidentesAtivos[id];
-                const item = document.createElement('div');
-                item.className = `incident-item ${incidenteAtual === id ? 'active' : ''}`;
-                item.innerHTML = `
-                    <div>
-                        <div class="incident-id">${id}</div>
-                        <div class="incident-info">${incidente.tipo} - ${incidente.incidente || incidente.incidenteManobra}</div>
-                    </div>
-                    <button class="delete-incident" onclick="excluirIncidente('${id}')">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                `;
-                item.addEventListener('click', (e) => {
-                    if (!e.target.closest('.delete-incident')) {
-                        carregarIncidentePorId(id);
-                    }
-                });
-                incidentList.appendChild(item);
-            });
-        }
-
-        function salvarIncidente() {
+        async function salvarIncidente() {
             const tipoMensagem = document.getElementById('tipoMensagem').value;
             if (!tipoMensagem) {
                 alert('Por favor, selecione um tipo de mensagem primeiro');
@@ -706,17 +808,128 @@
             const dados = coletarDadosFormulario(tipoMensagem);
             if (!dados) return;
 
-            incidentesAtivos[incidenteId] = {
-                tipo: tipoMensagem,
-                ...dados,
-                dataCriacao: new Date().toISOString()
-            };
-
-            incidenteAtual = incidenteId;
-            atualizarListaIncidentes();
-            
-            alert(`Incidente ${incidenteId} salvo com sucesso!`);
+            try {
+                await jsonBinService.salvarIncidente(incidenteId, tipoMensagem, dados);
+                incidenteAtual = incidenteId;
+                await atualizarListaIncidentes();
+                alert('✅ Incidente salvo e COMPARTILHADO com todos os usuários!');
+            } catch (error) {
+                alert('⚠️ Incidente salvo localmente (sem compartilhamento)');
+            }
         }
+
+        async function carregarIncidente() {
+            const incidenteId = document.getElementById('incidenteId').value.trim();
+            if (!incidenteId) {
+                alert('Insira o número do incidente!');
+                return;
+            }
+            await carregarIncidentePorId(incidenteId);
+        }
+
+        async function carregarIncidentePorId(incidenteId) {
+            try {
+                const incidente = await jsonBinService.carregarIncidente(incidenteId);
+                document.getElementById('incidenteId').value = incidente.incidente_id;
+                document.getElementById('tipoMensagem').value = incidente.tipo;
+                mostrarFormulario();
+
+                if (incidente.tipo === 'rompimento') {
+                    document.getElementById('topologia').value = incidente.dados.topologia || '';
+                    document.getElementById('incidente').value = incidente.dados.incidente || '';
+                    document.getElementById('cidade').value = incidente.dados.cidade || '';
+                    document.getElementById('distrito').value = incidente.dados.distrito || '';
+                    document.getElementById('impacto').value = incidente.dados.impacto || '';
+                    document.getElementById('base').value = incidente.dados.base || '';
+                    document.getElementById('rec').value = incidente.dados.rec || '';
+                    document.getElementById('ral').value = incidente.dados.ral || '';
+                    document.getElementById('abertura').value = incidente.dados.abertura || '';
+                    document.getElementById('previsao').value = incidente.dados.previsao || '';
+                    document.getElementById('acionamento').value = incidente.dados.acionamento || '';
+                } else if (incidente.tipo === 'manobra') {
+                    document.getElementById('topologiaManobra').value = incidente.dados.topologiaManobra || '';
+                    document.getElementById('ticketManobra').value = incidente.dados.ticketManobra || '';
+                    document.getElementById('incidenteManobra').value = incidente.dados.incidenteManobra || '';
+                    document.getElementById('cidadeManobra').value = incidente.dados.cidadeManobra || '';
+                    document.getElementById('distritoManobra').value = incidente.dados.distritoManobra || '';
+                    document.getElementById('impactoManobra').value = incidente.dados.impactoManobra || '';
+                    document.getElementById('baseManobra').value = incidente.dados.baseManobra || '';
+                    document.getElementById('responsavelManobra').value = incidente.dados.responsavelManobra || '';
+                    document.getElementById('executorManobra').value = incidente.dados.executorManobra || '';
+                    document.getElementById('enderecoManobra').value = incidente.dados.enderecoManobra || '';
+                    document.getElementById('propostoManobra').value = incidente.dados.propostoManobra || '';
+                }
+
+                incidenteAtual = incidente.incidente_id;
+                await atualizarListaIncidentes();
+                alert('✅ Incidente carregado do servidor compartilhado!');
+            } catch (error) {
+                alert('❌ Erro ao carregar incidente: ' + error.message);
+            }
+        }
+
+        async function atualizarListaIncidentes() {
+            const incidentList = document.getElementById('incidentList');
+            incidentList.innerHTML = '<div class="no-incidents">Carregando incidentes...</div>';
+
+            try {
+                const incidentesRemotos = await jsonBinService.listarIncidentesAtivos();
+                
+                if (incidentesRemotos.length === 0) {
+                    incidentList.innerHTML = '<div class="no-incidents">Nenhum incidente ativo</div>';
+                    return;
+                }
+
+                incidentList.innerHTML = '';
+                incidentesRemotos.forEach(incidente => {
+                    const item = document.createElement('div');
+                    item.className = `incident-item ${incidenteAtual === incidente.incidente_id ? 'active' : ''}`;
+                    item.innerHTML = `
+                        <div>
+                            <div class="incident-id">${incidente.incidente_id} 
+                                <small style="color: #666;">(por ${incidente.criado_por})</small>
+                            </div>
+                            <div class="incident-info">${incidente.tipo} - ${incidente.dados.incidente || incidente.dados.incidenteManobra || 'Sem nome'}</div>
+                            <div class="incident-info" style="font-size: 11px;">
+                                Atualizado: ${new Date(incidente.data_atualizacao || incidente.dataCriacao).toLocaleString()}
+                            </div>
+                        </div>
+                        <button class="delete-incident" onclick="excluirIncidente('${incidente.incidente_id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    `;
+                    item.addEventListener('click', (e) => {
+                        if (!e.target.closest('.delete-incident')) {
+                            carregarIncidentePorId(incidente.incidente_id);
+                        }
+                    });
+                    incidentList.appendChild(item);
+                });
+            } catch (error) {
+                incidentList.innerHTML = '<div class="no-incidents">Erro ao carregar incidentes</div>';
+            }
+        }
+
+        async function excluirIncidente(incidenteId) {
+            if (confirm('Tem certeza que deseja excluir o incidente ' + incidenteId + '?')) {
+                try {
+                    await jsonBinService.excluirIncidente(incidenteId);
+                    if (incidenteAtual === incidenteId) {
+                        incidenteAtual = null;
+                        document.getElementById('incidenteId').value = '';
+                        limparFormularios();
+                    }
+                    await atualizarListaIncidentes();
+                    alert('✅ Incidente excluído com sucesso!');
+                } catch (error) {
+                    alert('⚠️ Incidente excluído apenas localmente');
+                }
+            }
+        }
+
+        // =============================================
+        // FUNÇÕES ORIGINAIS
+        // =============================================
 
         function coletarDadosFormulario(tipo) {
             if (tipo === 'rompimento') {
@@ -742,8 +955,6 @@
                     distritoManobra: document.getElementById('distritoManobra').value,
                     impactoManobra: document.getElementById('impactoManobra').value,
                     baseManobra: document.getElementById('baseManobra').value,
-                    recManobra: document.getElementById('recManobra').value,
-                    ralManobra: document.getElementById('ralManobra').value,
                     responsavelManobra: document.getElementById('responsavelManobra').value,
                     executorManobra: document.getElementById('executorManobra').value,
                     enderecoManobra: document.getElementById('enderecoManobra').value,
@@ -753,71 +964,20 @@
             return null;
         }
 
-        function carregarIncidente() {
-            const incidenteId = document.getElementById('incidenteId').value.trim();
-            if (!incidenteId) {
-                alert('Insira o número do incidente!');
-                return;
-            }
-            carregarIncidentePorId(incidenteId);
+        function validarCampoNumerico(input) {
+            input.value = input.value.replace(/[^0-9]/g, '');
         }
 
-        function carregarIncidentePorId(incidenteId) {
-            if (!incidentesAtivos[incidenteId]) {
-                alert('Incidente não encontrado');
-                return;
-            }
-
-            const incidente = incidentesAtivos[incidenteId];
-            document.getElementById('incidenteId').value = incidenteId;
-            document.getElementById('tipoMensagem').value = incidente.tipo;
-            mostrarFormulario();
-
-            if (incidente.tipo === 'rompimento') {
-                document.getElementById('topologia').value = incidente.topologia || '';
-                document.getElementById('incidente').value = incidente.incidente || '';
-                document.getElementById('cidade').value = incidente.cidade || '';
-                document.getElementById('distrito').value = incidente.distrito || '';
-                document.getElementById('impacto').value = incidente.impacto || '';
-                document.getElementById('base').value = incidente.base || '';
-                document.getElementById('rec').value = incidente.rec || '';
-                document.getElementById('ral').value = incidente.ral || '';
-                document.getElementById('abertura').value = incidente.abertura || '';
-                document.getElementById('previsao').value = incidente.previsao || '';
-                document.getElementById('acionamento').value = incidente.acionamento || '';
-            } else if (incidente.tipo === 'manobra') {
-                document.getElementById('topologiaManobra').value = incidente.topologiaManobra || '';
-                document.getElementById('ticketManobra').value = incidente.ticketManobra || '';
-                document.getElementById('incidenteManobra').value = incidente.incidenteManobra || '';
-                document.getElementById('cidadeManobra').value = incidente.cidadeManobra || '';
-                document.getElementById('distritoManobra').value = incidente.distritoManobra || '';
-                document.getElementById('impactoManobra').value = incidente.impactoManobra || '';
-                document.getElementById('baseManobra').value = incidente.baseManobra || '';
-                document.getElementById('recManobra').value = incidente.recManobra || '';
-                document.getElementById('ralManobra').value = incidente.ralManobra || '';
-                document.getElementById('responsavelManobra').value = incidente.responsavelManobra || '';
-                document.getElementById('executorManobra').value = incidente.executorManobra || '';
-                document.getElementById('enderecoManobra').value = incidente.enderecoManobra || '';
-                document.getElementById('propostoManobra').value = incidente.propostoManobra || '';
-            }
-
-            incidenteAtual = incidenteId;
-            atualizarListaIncidentes();
-            alert(`Incidente ${incidenteId} carregado com sucesso!`);
-        }
-
-        function excluirIncidente(incidenteId) {
-            if (confirm(`Tem certeza que deseja excluir o incidente ${incidenteId}?`)) {
-                delete incidentesAtivos[incidenteId];
-                
-                if (incidenteAtual === incidenteId) {
-                    incidenteAtual = null;
-                    document.getElementById('incidenteId').value = '';
-                    limparFormularios();
-                }
-                
-                atualizarListaIncidentes();
-                alert(`Incidente ${incidenteId} excluído com sucesso!`);
+        function mostrarFormulario() {
+            const tipo = document.getElementById('tipoMensagem').value;
+            document.getElementById('formRompimento').classList.add('hidden');
+            document.getElementById('formManobra').classList.add('hidden');
+            document.getElementById('outputContainer').classList.add('hidden');
+            
+            if (tipo === 'rompimento') {
+                document.getElementById('formRompimento').classList.remove('hidden');
+            } else if (tipo === 'manobra') {
+                document.getElementById('formManobra').classList.remove('hidden');
             }
         }
 
@@ -843,45 +1003,12 @@
             document.getElementById('distritoManobra').value = '';
             document.getElementById('impactoManobra').value = '';
             document.getElementById('baseManobra').value = '';
-            document.getElementById('recManobra').value = '';
-            document.getElementById('ralManobra').value = '';
             document.getElementById('responsavelManobra').value = '';
             document.getElementById('executorManobra').value = '';
             document.getElementById('enderecoManobra').value = '';
             document.getElementById('propostoManobra').value = '';
             document.getElementById('statusManobra').value = '';
             document.getElementById('statusCamposManobra').innerHTML = '';
-        }
-
-        function validarCampoNumerico(input) {
-            input.value = input.value.replace(/[^0-9]/g, '');
-        }
-
-        function verificarEscalonamento(topologia, valorImpacto) {
-            const numero = parseInt(valorImpacto);
-            if (isNaN(numero)) return false;
-            
-            if (topologia === 'HFC' && numero >= 10) {
-                alert('ATENÇÃO: Este caso precisa de escalonamento! Impacto HFC ≥ 10');
-                return true;
-            } else if (topologia === 'GPON' && numero >= 300) {
-                alert('ATENÇÃO: Este caso precisa de escalonamento! Impacto GPON ≥ 300');
-                return true;
-            }
-            return false;
-        }
-
-        function mostrarFormulario() {
-            const tipo = document.getElementById('tipoMensagem').value;
-            document.getElementById('formRompimento').classList.add('hidden');
-            document.getElementById('formManobra').classList.add('hidden');
-            document.getElementById('outputContainer').classList.add('hidden');
-            
-            if (tipo === 'rompimento') {
-                document.getElementById('formRompimento').classList.remove('hidden');
-            } else if (tipo === 'manobra') {
-                document.getElementById('formManobra').classList.remove('hidden');
-            }
         }
 
         function atualizarCamposStatus() {
@@ -1140,57 +1267,6 @@
             }
         }
 
-        function toggleEscalonamentoInputManobra(tipo) {
-            const checkbox = document.getElementById(`esc_${tipo}_m`);
-            const input = document.getElementById(`esc_${tipo}_nome_m`);
-            
-            if (checkbox.checked) {
-                input.classList.remove('hidden');
-            } else {
-                input.classList.add('hidden');
-                input.value = '';
-            }
-        }
-
-        function mostrarCampoScanManobra() {
-            const campoScan = document.getElementById('campoScanManobra');
-            const scanSim = document.getElementById('scan_sim_m');
-            
-            if (scanSim && scanSim.checked) {
-                campoScan.innerHTML = `
-                    <div class="form-group">
-                        <label for="metragemScanManobra">Metragem do Scan:</label>
-                        <input type="text" id="metragemScanManobra" placeholder="Ex: 1500M">
-                    </div>
-                `;
-                campoScan.classList.remove('hidden');
-            } else {
-                campoScan.classList.add('hidden');
-            }
-        }
-
-        function mostrarCampoEquipeManobra() {
-            const campoEquipe = document.getElementById('campoEquipeManobra');
-            const equipeSim = document.getElementById('equipe_sim_m');
-            
-            if (equipeSim && equipeSim.checked) {
-                campoEquipe.innerHTML = `
-                    <div class="form-group">
-                        <label for="motivoEquipeManobra">Motivo:</label>
-                        <select id="motivoEquipeManobra">
-                            <option value="">-- Selecione --</option>
-                            <option value="ÁREA DE RISCO">Área de risco</option>
-                            <option value="INDISPONIBILIDADE TÉCNICA">Indisponibilidade técnica</option>
-                            <option value="SEM ACESSO">Sem acesso</option>
-                        </select>
-                    </div>
-                `;
-                campoEquipe.classList.remove('hidden');
-            } else {
-                campoEquipe.classList.add('hidden');
-            }
-        }
-
         function validarFormatoDataHora(dataHora) {
             const regex = /^\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}$/;
             return regex.test(dataHora);
@@ -1203,16 +1279,18 @@
             }
         }
 
-        function verificarAlertaImpacto(topologia, valorImpacto) {
+        function verificarEscalonamento(topologia, valorImpacto) {
             const numero = parseInt(valorImpacto);
-            if (isNaN(numero)) return '';
+            if (isNaN(numero)) return false;
             
             if (topologia === 'HFC' && numero >= 10) {
-                return ' ⚠️';
+                alert('ATENÇÃO: Este caso precisa de escalonamento! Impacto HFC ≥ 10');
+                return true;
             } else if (topologia === 'GPON' && numero >= 300) {
-                return ' ⚠️';
+                alert('ATENÇÃO: Este caso precisa de escalonamento! Impacto GPON ≥ 300');
+                return true;
             }
-            return '';
+            return false;
         }
 
         function gerarMensagem() {
@@ -1259,7 +1337,6 @@
             }
 
             const get = id => document.getElementById(id)?.value.toUpperCase() || '';
-            const alertaImpacto = verificarAlertaImpacto(topologia, impactoValor);
             const tipoImpactoTexto = tipoImpactoElement.value === 'com' ? 'COM IMPACTO' : 'SEM IMPACTO';
 
             let msg = `## COP REDE INFORMA: INCIDENTE ${tipoImpactoTexto}
@@ -1268,7 +1345,7 @@
             msg += `## INCIDENTE: ${get('incidente')}\n`;
             msg += `## CIDADE/CLUSTER: ${get('cidade')}\n`;
             msg += `## ÁREA/DISTRITO: ${get('distrito')}\n`;
-            msg += `## IMPACTO: ${get('impacto')}${alertaImpacto}\n`;
+            msg += `## IMPACTO: ${get('impacto')}\n`;
             msg += `## BASE AFETADA: ${get('base')}\n`;
 
             const recValue = parseInt(get('rec'));
@@ -1411,8 +1488,6 @@
             }
 
             const get = id => document.getElementById(id)?.value.toUpperCase() || '';
-            const impactoManobraValor = document.getElementById('impactoManobra').value;
-            const alertaImpactoManobra = verificarAlertaImpacto(topologiaManobra, impactoManobraValor);
             const tipoImpactoTexto = tipoImpactoElement.value === 'com' ? 'COM IMPACTO' : 'SEM IMPACTO';
 
             let msg = `## COP REDE INFORMA: INCIDENTE ${tipoImpactoTexto}
@@ -1422,7 +1497,7 @@
             msg += `## INCIDENTE: ${get('incidenteManobra')}\n`;
             msg += `## CIDADE/CLUSTER: ${get('cidadeManobra')}\n`;
             msg += `## ÁREA/DISTRITO: ${get('distritoManobra')}\n`;
-            msg += `## IMPACTO: ${get('impactoManobra')}${alertaImpactoManobra}\n`;
+            msg += `## IMPACTO: ${get('impactoManobra')}\n`;
             msg += `## BASE AFETADA: ${get('baseManobra')}\n`;
             msg += `## RESPONSÁVEL: ${get('responsavelManobra')}\n`;
             msg += `## EXECUTOR: ${get('executorManobra')}\n`;
@@ -1480,6 +1555,23 @@
             document.getElementById('output').textContent = '';
             document.getElementById('outputContainer').classList.add('hidden');
         }
+
+        // =============================================
+        // INICIALIZAÇÃO
+        // =============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            atualizarListaIncidentes();
+            
+            const inputs = document.querySelectorAll('input, textarea');
+            inputs.forEach(input => {
+                if (input.type !== 'radio' && input.type !== 'checkbox') {
+                    input.addEventListener('input', function() {
+                        this.value = this.value.toUpperCase();
+                        this.value = this.value.replace(/\.{2,}/g, '.');
+                    });
+                }
+            });
+        });
     </script>
 </body>
 </html>
