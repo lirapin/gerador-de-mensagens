@@ -205,6 +205,11 @@
             max-height: 150px;
             overflow-y: auto;
             background: white;
+            transition: max-height 0.3s ease;
+        }
+
+        .incident-list.expanded {
+            max-height: 500px;
         }
 
         .incident-item {
@@ -251,6 +256,23 @@
             text-align: center;
             color: #666;
             font-style: italic;
+        }
+
+        .expand-btn {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .expand-btn:hover {
+            background: #2e7d32;
+            transform: none;
         }
 
         .form-row {
@@ -386,12 +408,15 @@
                     <input type="text" id="incidenteId" placeholder="">
                 </div>
                 <div class="form-group">
-                    <button onclick="carregarIncidente()"><i class="fas fa-search"></i> Carregar</button>
+                    <button onclick="carregarIncidente()" title="Carregar incidente"><i class="fas fa-search"></i></button>
                 </div>
             </div>
             
             <div class="form-group">
                 <label>Incidentes Ativos:</label>
+                <button class="expand-btn" onclick="toggleExpandirLista()" title="Expandir/Recolher lista">
+                    <i class="fas fa-expand-alt" id="expandIcon"></i>
+                </button>
                 <div class="incident-list" id="incidentList">
                     <div class="no-incidents">Nenhum incidente ativo</div>
                 </div>
@@ -516,8 +541,8 @@
             <div id="statusCampos"></div>
 
             <div class="button-group">
-                <button onclick="gerarMensagem()"><i class="fas fa-file-alt"></i> Gerar Mensagem</button>
                 <button onclick="salvarIncidente()" class="btn-copy"><i class="fas fa-save"></i> Salvar Incidente</button>
+                <button onclick="gerarMensagem()"><i class="fas fa-file-alt"></i> Gerar Mensagem</button>
             </div>
         </div>
 
@@ -618,8 +643,8 @@
             <div id="statusCamposManobra"></div>
 
             <div class="button-group">
-                <button onclick="gerarMensagemManobra()"><i class="fas fa-file-alt"></i> Gerar Mensagem</button>
                 <button onclick="salvarIncidente()" class="btn-copy"><i class="fas fa-save"></i> Salvar Incidente</button>
+                <button onclick="gerarMensagemManobra()"><i class="fas fa-file-alt"></i> Gerar Mensagem</button>
             </div>
         </div>
 
@@ -772,7 +797,39 @@
             getUsuario() {
                 let usuario = localStorage.getItem('usuario_incidentes');
                 if (!usuario) {
-                    usuario = prompt('Digite seu nome para identificar seus incidentes:') || 'Usuário';
+                    while (true) {
+                        usuario = prompt('Digite seu nome para identificar seus incidentes:');
+                        
+                        // Verificar se o usuário cancelou
+                        if (usuario === null) {
+                            alert('O nome é obrigatório para salvar o incidente!');
+                            continue;
+                        }
+                        
+                        // Remover espaços em branco do início e fim
+                        usuario = usuario.trim();
+                        
+                        // Verificar se está vazio
+                        if (usuario === '') {
+                            alert('O nome não pode ficar vazio!');
+                            continue;
+                        }
+                        
+                        // Verificar se contém números
+                        if (/\d/.test(usuario)) {
+                            alert('O nome não pode conter números! Use apenas letras.');
+                            continue;
+                        }
+                        
+                        // Verificar se tem pelo menos 2 caracteres
+                        if (usuario.length < 2) {
+                            alert('O nome deve ter pelo menos 2 caracteres!');
+                            continue;
+                        }
+                        
+                        // Nome válido, sair do loop
+                        break;
+                    }
                     localStorage.setItem('usuario_incidentes', usuario);
                 }
                 return usuario;
@@ -786,6 +843,68 @@
         // =============================================
         let incidentesAtivos = {};
         let incidenteAtual = null;
+
+        // =============================================
+        // FUNÇÃO DE EXPANSÃO DA LISTA
+        // =============================================
+        function toggleExpandirLista() {
+            const incidentList = document.getElementById('incidentList');
+            const expandIcon = document.getElementById('expandIcon');
+            
+            if (incidentList.classList.contains('expanded')) {
+                incidentList.classList.remove('expanded');
+                expandIcon.className = 'fas fa-expand-alt';
+            } else {
+                incidentList.classList.add('expanded');
+                expandIcon.className = 'fas fa-compress-alt';
+            }
+        }
+
+        // =============================================
+        // FUNÇÃO DE LIMPEZA AUTOMÁTICA
+        // =============================================
+        async function limparIncidentesExpirados() {
+            try {
+                const todosIncidentes = await jsonBinService.buscarTodosIncidentes();
+                const agora = new Date();
+                let incidentesAtualizados = [];
+                
+                todosIncidentes.forEach(incidente => {
+                    const dataAtualizacao = new Date(incidente.data_atualizacao || incidente.data_criacao);
+                    const diferencaHoras = (agora - dataAtualizacao) / (1000 * 60 * 60);
+                    
+                    // Verificar se é um incidente encerrado
+                    const isEncerrado = incidente.dados && (
+                        (incidente.dados.statusEncerrado === true) || 
+                        (incidente.ultimoStatus === 'encerramento')
+                    );
+                    
+                    if (isEncerrado) {
+                        // Incidentes encerrados: excluir após 3 horas
+                        if (diferencaHoras < 3) {
+                            incidentesAtualizados.push(incidente);
+                        } else {
+                            console.log(`Incidente ${incidente.incidente_id} encerrado há mais de 3h - excluído`);
+                        }
+                    } else {
+                        // Incidentes não encerrados: excluir após 24 horas
+                        if (diferencaHoras < 24) {
+                            incidentesAtualizados.push(incidente);
+                        } else {
+                            console.log(`Incidente ${incidente.incidente_id} sem atualização há mais de 24h - excluído`);
+                        }
+                    }
+                });
+                
+                // Se houve mudanças, salvar
+                if (incidentesAtualizados.length !== todosIncidentes.length) {
+                    await jsonBinService.salvarTodosIncidentes(incidentesAtualizados);
+                    console.log(`Limpeza automática: ${todosIncidentes.length - incidentesAtualizados.length} incidente(s) excluído(s)`);
+                }
+            } catch (error) {
+                console.error('Erro na limpeza automática:', error);
+            }
+        }
 
         // =============================================
         // FUNÇÕES PRINCIPAIS MODIFICADAS
@@ -812,7 +931,10 @@
                 await jsonBinService.salvarIncidente(incidenteId, tipoMensagem, dados);
                 incidenteAtual = incidenteId;
                 await atualizarListaIncidentes();
-                alert('✅ Incidente salvo e COMPARTILHADO com todos os usuários!');
+                alert('✅ Incidente ' + incidenteId + ' salvo e COMPARTILHADO com todos os usuários!');
+                
+                // Carregar automaticamente o incidente que acabou de ser salvo (modo silencioso - sem alerta)
+                await carregarIncidentePorId(incidenteId, true);
             } catch (error) {
                 alert('⚠️ Incidente salvo localmente (sem compartilhamento)');
             }
@@ -827,7 +949,7 @@
             await carregarIncidentePorId(incidenteId);
         }
 
-        async function carregarIncidentePorId(incidenteId) {
+        async function carregarIncidentePorId(incidenteId, silencioso = false) {
             try {
                 const incidente = await jsonBinService.carregarIncidente(incidenteId);
                 document.getElementById('incidenteId').value = incidente.incidente_id;
@@ -862,7 +984,11 @@
 
                 incidenteAtual = incidente.incidente_id;
                 await atualizarListaIncidentes();
-                alert('✅ Incidente carregado do servidor compartilhado!');
+                
+                // Só mostrar alerta se não for chamada silenciosa
+                if (!silencioso) {
+                    alert('✅ Incidente carregado do servidor compartilhado!');
+                }
             } catch (error) {
                 alert('❌ Erro ao carregar incidente: ' + error.message);
             }
@@ -873,6 +999,9 @@
             incidentList.innerHTML = '<div class="no-incidents">Carregando incidentes...</div>';
 
             try {
+                // Executar limpeza automática primeiro
+                await limparIncidentesExpirados();
+                
                 const incidentesRemotos = await jsonBinService.listarIncidentesAtivos();
                 
                 if (incidentesRemotos.length === 0) {
@@ -884,9 +1013,17 @@
                 incidentesRemotos.forEach(incidente => {
                     const item = document.createElement('div');
                     item.className = `incident-item ${incidenteAtual === incidente.incidente_id ? 'active' : ''}`;
+                    
+                    // Verificar se é encerrado
+                    const isEncerrado = incidente.dados && (
+                        (incidente.dados.statusEncerrado === true) || 
+                        (incidente.ultimoStatus === 'encerramento')
+                    );
+                    const statusTag = isEncerrado ? ' <span style="color: #f44336; font-weight: bold;">[ENCERRADO]</span>' : '';
+                    
                     item.innerHTML = `
                         <div>
-                            <div class="incident-id">${incidente.incidente_id} 
+                            <div class="incident-id">${incidente.incidente_id}${statusTag}
                                 <small style="color: #666;">(por ${incidente.criado_por})</small>
                             </div>
                             <div class="incident-info">${incidente.tipo} - ${incidente.dados.incidente || incidente.dados.incidenteManobra || 'Sem nome'}</div>
@@ -1279,9 +1416,12 @@
             }
         }
 
-        function verificarEscalonamento(topologia, valorImpacto) {
+        function verificarEscalonamento(topologia, valorImpacto, tipoStatus) {
             const numero = parseInt(valorImpacto);
             if (isNaN(numero)) return false;
+            
+            // Só mostrar alerta no status inicial
+            if (tipoStatus !== 'inicial') return false;
             
             if (topologia === 'HFC' && numero >= 10) {
                 alert('ATENÇÃO: Este caso precisa de escalonamento! Impacto HFC ≥ 10');
@@ -1293,7 +1433,23 @@
             return false;
         }
 
-        function gerarMensagem() {
+        function verificarAlertaImpacto(topologia, valorImpacto) {
+            const numero = parseInt(valorImpacto);
+            
+            if (isNaN(numero)) {
+                return '';
+            }
+            
+            if (topologia === 'HFC' && numero >= 10) {
+                return ' ⚠️';
+            } else if (topologia === 'GPON' && numero >= 300) {
+                return ' ⚠️';
+            }
+            
+            return '';
+        }
+
+        async function gerarMensagem() {
             const topologia = document.getElementById('topologia').value;
             if (!topologia) {
                 alert('Por favor, selecione o tipo de topologia');
@@ -1313,7 +1469,7 @@
             }
 
             const impactoValor = document.getElementById('impacto').value;
-            verificarEscalonamento(topologia, impactoValor);
+            verificarEscalonamento(topologia, impactoValor, tipoStatus);
 
             const camposDataHora = ['abertura', 'previsao', 'acionamento'];
             if (tipoStatus === 'encerramento') {
@@ -1338,6 +1494,7 @@
 
             const get = id => document.getElementById(id)?.value.toUpperCase() || '';
             const tipoImpactoTexto = tipoImpactoElement.value === 'com' ? 'COM IMPACTO' : 'SEM IMPACTO';
+            const alertaImpacto = verificarAlertaImpacto(topologia, impactoValor);
 
             let msg = `## COP REDE INFORMA: INCIDENTE ${tipoImpactoTexto}
 ## ROMPIMENTO DE FIBRA RESIDENCIAL\n`;
@@ -1345,7 +1502,7 @@
             msg += `## INCIDENTE: ${get('incidente')}\n`;
             msg += `## CIDADE/CLUSTER: ${get('cidade')}\n`;
             msg += `## ÁREA/DISTRITO: ${get('distrito')}\n`;
-            msg += `## IMPACTO: ${get('impacto')}\n`;
+            msg += `## IMPACTO: ${get('impacto')}${alertaImpacto}\n`;
             msg += `## BASE AFETADA: ${get('base')}\n`;
 
             const recValue = parseInt(get('rec'));
@@ -1445,9 +1602,34 @@
             
             document.getElementById('output').textContent = msg;
             document.getElementById('outputContainer').classList.remove('hidden');
+            
+            // SALVAMENTO AUTOMÁTICO (exceto no status inicial - primeira mensagem)
+            if (tipoStatus !== 'inicial') {
+                const incidenteId = document.getElementById('incidenteId').value.trim();
+                if (incidenteId) {
+                    const dados = coletarDadosFormulario('rompimento');
+                    dados.statusEncerrado = (tipoStatus === 'encerramento');
+                    
+                    try {
+                        const todosIncidentes = await jsonBinService.buscarTodosIncidentes();
+                        const incidenteExistente = todosIncidentes.find(inc => inc.incidente_id === incidenteId);
+                        
+                        if (incidenteExistente) {
+                            incidenteExistente.dados = dados;
+                            incidenteExistente.data_atualizacao = new Date().toISOString();
+                            incidenteExistente.ultimoStatus = tipoStatus;
+                            
+                            await jsonBinService.salvarTodosIncidentes(todosIncidentes);
+                            console.log(`✅ Incidente ${incidenteId} salvo automaticamente (${tipoStatus})`);
+                        }
+                    } catch (error) {
+                        console.error('Erro ao salvar automaticamente:', error);
+                    }
+                }
+            }
         }
 
-        function gerarMensagemManobra() {
+        async function gerarMensagemManobra() {
             const topologiaManobra = document.getElementById('topologiaManobra').value;
             if (!topologiaManobra) {
                 alert('Por favor, selecione o tipo de topologia');
@@ -1489,6 +1671,8 @@
 
             const get = id => document.getElementById(id)?.value.toUpperCase() || '';
             const tipoImpactoTexto = tipoImpactoElement.value === 'com' ? 'COM IMPACTO' : 'SEM IMPACTO';
+            const impactoManobraValor = document.getElementById('impactoManobra').value;
+            const alertaImpactoManobra = verificarAlertaImpacto(topologiaManobra, impactoManobraValor);
 
             let msg = `## COP REDE INFORMA: INCIDENTE ${tipoImpactoTexto}
 ## MANOBRA DE FIBRA RESIDENCIAL\n`;
@@ -1497,7 +1681,7 @@
             msg += `## INCIDENTE: ${get('incidenteManobra')}\n`;
             msg += `## CIDADE/CLUSTER: ${get('cidadeManobra')}\n`;
             msg += `## ÁREA/DISTRITO: ${get('distritoManobra')}\n`;
-            msg += `## IMPACTO: ${get('impactoManobra')}\n`;
+            msg += `## IMPACTO: ${get('impactoManobra')}${alertaImpactoManobra}\n`;
             msg += `## BASE AFETADA: ${get('baseManobra')}\n`;
             msg += `## RESPONSÁVEL: ${get('responsavelManobra')}\n`;
             msg += `## EXECUTOR: ${get('executorManobra')}\n`;
@@ -1532,6 +1716,31 @@
             
             document.getElementById('output').textContent = msg;
             document.getElementById('outputContainer').classList.remove('hidden');
+            
+            // SALVAMENTO AUTOMÁTICO (exceto no status inicial - primeira mensagem)
+            if (tipoStatus !== 'inicial') {
+                const incidenteId = document.getElementById('incidenteId').value.trim();
+                if (incidenteId) {
+                    const dados = coletarDadosFormulario('manobra');
+                    dados.statusEncerrado = (tipoStatus === 'encerramento');
+                    
+                    try {
+                        const todosIncidentes = await jsonBinService.buscarTodosIncidentes();
+                        const incidenteExistente = todosIncidentes.find(inc => inc.incidente_id === incidenteId);
+                        
+                        if (incidenteExistente) {
+                            incidenteExistente.dados = dados;
+                            incidenteExistente.data_atualizacao = new Date().toISOString();
+                            incidenteExistente.ultimoStatus = tipoStatus;
+                            
+                            await jsonBinService.salvarTodosIncidentes(todosIncidentes);
+                            console.log(`✅ Incidente ${incidenteId} salvo automaticamente (${tipoStatus})`);
+                        }
+                    } catch (error) {
+                        console.error('Erro ao salvar automaticamente:', error);
+                    }
+                }
+            }
         }
 
         function copiarMensagem() {
