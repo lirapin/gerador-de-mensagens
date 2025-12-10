@@ -1,3 +1,4 @@
+
 /**
  * Funções de geração de mensagens
  */
