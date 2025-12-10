@@ -157,6 +157,7 @@ function gerarConteudoStatusAtualizacao() {
     const causa = document.getElementById('causaDano')?.value.toUpperCase() || '';
     const cabos = document.getElementById('cabosAfetados')?.value.toUpperCase() || '';
     const percentual = document.getElementById('validado')?.value || '';
+    const novaAtualizacao = document.getElementById('novaAtualizacao')?.value.toUpperCase().trim() || '';
 
     let statusInfo = [];
 
@@ -174,6 +175,11 @@ function gerarConteudoStatusAtualizacao() {
 
     if (percentual && parseInt(percentual) > 0) {
         statusInfo.push(`PERCENTUAL DE NODES NORMALIZADOS: ${percentual}%`);
+    }
+
+    // Adicionar nova atualização (texto livre)
+    if (novaAtualizacao) {
+        statusInfo.push(novaAtualizacao);
     }
 
     if (statusInfo.length > 0) {
