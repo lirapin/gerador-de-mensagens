@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Mensagens - Fibra Óptica</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-broadcast-tower"></i> Gerador de Mensagens</h1>
+            <button class="refresh-btn" onclick="window.location.reload()" title="Atualizar página">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+        </header>
+
+        <div class="card incident-management">
+            <h2><i class="fas fa-tasks"></i> Gerenciamento de Incidentes</h2>
+            <div class="incident-management-compact">
+                <div class="form-group">
+                    <label for="incidenteId">Insira o número do incidente!</label>
+                    <input type="text" id="incidenteId" placeholder="">
+                </div>
+                <div class="form-group">
+                    <button onclick="carregarIncidente()" title="Carregar incidente"><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Incidentes Ativos:</label>
+                <button class="expand-btn" onclick="toggleExpandirLista()" title="Expandir/Recolher lista">
+                    <i class="fas fa-expand-alt" id="expandIcon"></i>
+                </button>
+                <div class="incident-list" id="incidentList">
+                    <div class="no-incidents">Nenhum incidente ativo</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="form-group">
+                <label for="tipoMensagem">Escolha o tipo de mensagem:</label>
+                <select id="tipoMensagem" onchange="mostrarFormulario()">
+                    <option value="">-- Selecione --</option>
+                    <option value="rompimento">Rompimento de Fibra Residencial</option>
+                    <option value="manobra">Manobra de Fibra Residencial</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="formRompimento" class="card hidden">
+            <h2><span class="status-indicator status-active"></span> Rompimento de Fibra Residencial</h2>
+
+            <div class="form-group">
+                <label>Tipo de Incidente:</label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="impacto_com" name="tipoImpacto" value="com">
+                        <label for="impacto_com">Com Impacto</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="impacto_sem" name="tipoImpacto" value="sem">
+                        <label for="impacto_sem">Sem Impacto</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="topologia">Topologia:</label>
+                    <select id="topologia">
+                        <option value="">-- Selecione o tipo de topologia --</option>
+                        <option value="HFC">HFC</option>
+                        <option value="GPON">GPON</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="incidente">Incidente:</label>
+                    <input type="text" id="incidente">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="cidade">Cidade/Cluster:</label>
+                    <input type="text" id="cidade" placeholder="Rio de Janeiro - RJO">
+                </div>
+
+                <div class="form-group">
+                    <label for="distrito">Área/Distrito:</label>
+                    <input type="text" id="distrito">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="impacto">Impacto:</label>
+                    <input type="text" id="impacto" oninput="Validators.validarCampoNumerico(this)">
+                </div>
+
+                <div class="form-group">
+                    <label for="base">Base Afetada:</label>
+                    <input type="text" id="base" oninput="Validators.validarCampoNumerico(this)">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="rec">REC:</label>
+                    <input type="text" id="rec" oninput="Validators.validarCampoNumerico(this)">
+                </div>
+
+                <div class="form-group">
+                    <label for="ral">RAL:</label>
+                    <input type="text" id="ral" oninput="Validators.validarCampoNumerico(this)">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="abertura">Data e Hora de Abertura:</label>
+                    <input type="text" id="abertura" placeholder="dd/mm/aaaa hh:mm">
+                    <div class="date-format">Formato obrigatório: dd/mm/aaaa hh:mm</div>
+                    <div class="error-message" id="abertura-error">Formato incorreto. Use: dd/mm/aaaa hh:mm</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="previsao">Previsão do Outage:</label>
+                    <input type="text" id="previsao" placeholder="dd/mm/aaaa hh:mm">
+                    <div class="date-format">Formato obrigatório: dd/mm/aaaa hh:mm</div>
+                    <div class="error-message" id="previsao-error">Formato incorreto. Use: dd/mm/aaaa hh:mm</div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="acionamento">Data e Hora de Acionamento:</label>
+                    <input type="text" id="acionamento" placeholder="dd/mm/aaaa hh:mm">
+                    <div class="date-format">Se vazio, será 'Aguardando disponibilidade técnica'</div>
+                    <div class="error-message" id="acionamento-error">Formato incorreto. Use: dd/mm/aaaa hh:mm</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="status">Tipo de Status:</label>
+                    <select id="status" onchange="atualizarCamposStatus()">
+                        <option value="">-- Selecione o tipo de status --</option>
+                        <option value="inicial">Inicial</option>
+                        <option value="atualizacao">Atualização</option>
+                        <option value="encerramento">Encerramento</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="statusCampos"></div>
+
+            <div class="button-group">
+                <button onclick="salvarIncidente()" class="btn-copy"><i class="fas fa-save"></i> Salvar Incidente</button>
+                <button onclick="gerarMensagem()"><i class="fas fa-file-alt"></i> Gerar Mensagem</button>
+            </div>
+        </div>
+
+        <div id="formManobra" class="card hidden">
+            <h2><span class="status-indicator status-active"></span> Manobra de Fibra Residencial</h2>
+
+            <div class="form-group">
+                <label>Tipo de Incidente:</label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="impacto_com_m" name="tipoImpactoManobra" value="com">
+                        <label for="impacto_com_m">Com Impacto</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="impacto_sem_m" name="tipoImpactoManobra" value="sem">
+                        <label for="impacto_sem_m">Sem Impacto</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="topologiaManobra">Topologia:</label>
+                <select id="topologiaManobra">
+                    <option value="">-- Selecione o tipo de topologia --</option>
+                    <option value="HFC">HFC</option>
+                    <option value="GPON">GPON</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="ticketManobra">Ticket da Manobra:</label>
+                    <input type="text" id="ticketManobra">
+                </div>
+
+                <div class="form-group">
+                    <label for="incidenteManobra">Incidente:</label>
+                    <input type="text" id="incidenteManobra">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="cidadeManobra">Cidade/Cluster:</label>
+                    <input type="text" id="cidadeManobra" placeholder="Rio de Janeiro - RJO">
+                </div>
+
+                <div class="form-group">
+                    <label for="distritoManobra">Área/Distrito:</label>
+                    <input type="text" id="distritoManobra">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="impactoManobra">Impacto:</label>
+                    <input type="text" id="impactoManobra" oninput="Validators.validarCampoNumerico(this)">
+                </div>
+
+                <div class="form-group">
+                    <label for="baseManobra">Base Afetada:</label>
+                    <input type="text" id="baseManobra" oninput="Validators.validarCampoNumerico(this)">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="responsavelManobra">Responsável:</label>
+                    <input type="text" id="responsavelManobra">
+                </div>
+
+                <div class="form-group">
+                    <label for="executorManobra">Executor:</label>
+                    <input type="text" id="executorManobra">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="enderecoManobra">Endereço:</label>
+                <input type="text" id="enderecoManobra">
+            </div>
+
+            <div class="form-group">
+                <label for="propostoManobra">Proposto:</label>
+                <input type="text" id="propostoManobra">
+            </div>
+
+            <div class="form-group">
+                <label for="statusManobra">Tipo de Status:</label>
+                <select id="statusManobra" onchange="atualizarCamposStatusManobra()">
+                    <option value="">-- Selecione o tipo de status --</option>
+                    <option value="inicial">Inicial</option>
+                    <option value="atualizacao">Atualização</option>
+                    <option value="encerramento">Encerramento</option>
+                </select>
+            </div>
+
+            <div id="statusCamposManobra"></div>
+
+            <div class="button-group">
+                <button onclick="salvarIncidente()" class="btn-copy"><i class="fas fa-save"></i> Salvar Incidente</button>
+                <button onclick="gerarMensagemManobra()"><i class="fas fa-file-alt"></i> Gerar Mensagem</button>
+            </div>
+        </div>
+
+        <div id="outputContainer" class="card hidden">
+            <h2><i class="fas fa-file-code"></i> Mensagem Gerada</h2>
+            <div id="output"></div>
+            <div class="button-group">
+                <button class="btn-copy" onclick="copiarMensagem()"><i class="fas fa-copy"></i> Copiar Mensagem</button>
+                <button onclick="limparMensagem()"><i class="fas fa-trash"></i> Limpar</button>
+            </div>
+        </div>
+
+        <footer>
+            <p class="signature">Desenvolvido por N5923221</p>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/config-inline.js"></script>
+    <script src="js/validators.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/sms.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/ui-messages.js"></script>
+    <script src="js/ui-sms.js"></script>
+</body>
+</html>
