@@ -5,6 +5,8 @@
 // ===== GERAÇÃO DE MENSAGENS - ROMPIMENTO =====
 
 async function gerarMensagem() {
+    console.log('🚀 FUNÇÃO gerarMensagem() INICIADA');
+
     const topologia = document.getElementById('topologia').value;
     if (!topologia) {
         alert('Por favor, selecione o tipo de topologia');
@@ -91,6 +93,11 @@ async function gerarMensagem() {
 
     // SALVAMENTO AUTOMÁTICO (exceto no status inicial)
     await salvarAutomaticamente('rompimento', tipoStatus);
+
+    // MOSTRAR POPUP DE CONFIRMAÇÃO
+    console.log('📢 CHAMANDO mostrarPopupMensagem()...');
+    mostrarPopupMensagem();
+    console.log('📢 mostrarPopupMensagem() FOI CHAMADA');
 }
 
 function gerarConteudoStatusInicial() {
@@ -192,6 +199,8 @@ function gerarConteudoStatusEncerramento() {
 // ===== GERAÇÃO DE MENSAGENS - MANOBRA =====
 
 async function gerarMensagemManobra() {
+    console.log('🚀 FUNÇÃO gerarMensagemManobra() INICIADA');
+
     const topologiaManobra = document.getElementById('topologiaManobra').value;
     if (!topologiaManobra) {
         alert('Por favor, selecione o tipo de topologia');
@@ -285,6 +294,11 @@ async function gerarMensagemManobra() {
 
     // SALVAMENTO AUTOMÁTICO (exceto no status inicial)
     await salvarAutomaticamente('manobra', tipoStatus);
+
+    // MOSTRAR POPUP DE CONFIRMAÇÃO
+    console.log('📢 CHAMANDO mostrarPopupMensagem() [MANOBRA]...');
+    mostrarPopupMensagem();
+    console.log('📢 mostrarPopupMensagem() FOI CHAMADA [MANOBRA]');
 }
 
 // ===== VERIFICAÇÃO DE ENVIO AUTOMÁTICO =====
@@ -470,6 +484,65 @@ function toggleExpandirLista() {
     }
 }
 
+// ===== POPUP DE CONFIRMAÇÃO =====
+
+/**
+ * Mostra o popup de mensagem gerada
+ */
+function mostrarPopupMensagem() {
+    try {
+        console.log('🎉 INICIANDO mostrarPopupMensagem()...');
+
+        const popup = document.getElementById('mensagemPopup');
+        console.log('Elemento popup:', popup);
+
+        if (!popup) {
+            console.error('❌ ERRO: Elemento popup não encontrado!');
+            alert('Erro: Popup não encontrado no DOM');
+            return;
+        }
+
+        console.log('Classes atuais:', popup.className);
+        popup.classList.remove('hidden');
+        console.log('Classes após remover hidden:', popup.className);
+        console.log('Display style:', window.getComputedStyle(popup).display);
+
+        // Garantir que está visível forçando o estilo
+        popup.style.display = 'flex';
+        console.log('✅ Popup AGORA ESTÁ VISÍVEL!');
+
+        // Fechar automaticamente após 3 segundos
+        setTimeout(() => {
+            console.log('⏰ Fechando popup automaticamente após 3s...');
+            fecharPopupMensagem();
+        }, 3000);
+    } catch (error) {
+        console.error('❌ ERRO CRÍTICO no mostrarPopupMensagem:', error);
+        alert('Erro ao mostrar popup: ' + error.message);
+    }
+}
+
+/**
+ * Fecha o popup de mensagem gerada
+ */
+function fecharPopupMensagem() {
+    try {
+        console.log('🔒 FECHANDO popup...');
+        const popup = document.getElementById('mensagemPopup');
+
+        if (!popup) {
+            console.error('❌ Elemento popup não encontrado ao fechar!');
+            return;
+        }
+
+        popup.classList.add('hidden');
+        popup.style.display = 'none';
+        console.log('✅ Popup fechado com sucesso!');
+    } catch (error) {
+        console.error('❌ Erro ao fechar popup:', error);
+    }
+}
+
 // ===== INICIALIZAÇÃO =====
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -486,4 +559,19 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
+
+    // Verificar se popup existe e configurar event listener
+    const popupElement = document.getElementById('mensagemPopup');
+    if (popupElement) {
+        console.log('✅ Popup encontrado no carregamento da página');
+
+        // Fechar popup ao clicar fora do card
+        popupElement.addEventListener('click', function(e) {
+            if (e.target === this) {
+                fecharPopupMensagem();
+            }
+        });
+    } else {
+        console.error('❌ Popup NÃO encontrado no carregamento da página!');
+    }
 });
