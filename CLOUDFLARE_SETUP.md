@@ -1,121 +1,131 @@
-# Configuração do Cloudflare Worker (Proxy Telegram)
+# Gerador de Mensagens - Fibra Óptica
 
-## 🎯 Objetivo
-Criar um proxy serverless para resolver problemas de CORS ao enviar mensagens via Telegram Bot API.
+Sistema de gerenciamento e geração de mensagens para incidentes de fibra óptica residencial.
 
----
+## Funcionalidades
 
-## 📋 Passo a Passo
+### Gerenciamento de incidentes
+- Rompimento de fibra (HFC/GPON)
+- Manobra de fibra residencial
+- Estouro de manobra
+- Status: inicial, atualização, encerramento
 
-### 1️⃣ Criar conta no Cloudflare (Gratuito)
+### Armazenamento de dados
+- Sincronização em nuvem via JSONBin.io
+- Fallback local com localStorage
+- Compartilhamento entre múltiplos usuários
 
-1. Acesse: https://dash.cloudflare.com/sign-up
+### Geração de mensagens
+- Templates padronizados
+- Validação automática de formatos
+- Alertas de escalonamento
+
+### Limpeza automática
+- Remove incidentes encerrados após 3 horas
+- Remove incidentes inativos após 24 horas
+
+### Notificação via WhatsApp (Evolution API)
+- Envio automático ao gerar mensagem
+- Mensagem para grupo do WhatsApp
+- Alertas individuais quando impacto alto (HFC ≥ 10 ou GPON ≥ 300)
+- Integração com Evolution API via Cloudflare Worker
+
+## Estrutura do projeto
+
+```
+geradomsg/
+├── index.html              # Estrutura HTML principal
+├── css/
+│   └── styles.css          # Estilos da aplicação
+├── js/
+│   ├── config-inline.js    # Configurações (WhatsApp, JSONBin)
+│   ├── api.js              # Serviço JSONBin.io
+│   ├── sms.js              # Serviço de notificação (WhatsApp/Telegram)
+│   ├── validators.js       # Funções de validação
+│   ├── ui.js               # Lógica da interface
+│   ├── ui-messages.js      # Geração de mensagens
+│   └── ui-sms.js           # Interface de notificações
+├── worker.js               # Cloudflare Worker (proxy CORS)
+├── WHATSAPP_SETUP.md       # Documentação Evolution API
+├── CLOUDFLARE_SETUP.md     # Documentação Cloudflare Worker
+├── .gitignore              # Arquivos ignorados pelo Git
+└── README.md               # Este arquivo
+```
+
+## Configuração
+
+### 1. JSONBin.io (armazenamento)
+
+1. Acesse [JSONBin.io](https://jsonbin.io/)
 2. Crie uma conta gratuita
-3. Confirme seu email
+3. Crie um novo Bin
+4. Copie o **Bin ID** e **Access Key**
+5. Configure em `js/config-inline.js`
 
----
+### 2. Evolution API (WhatsApp)
 
-### 2️⃣ Criar o Worker
+Consulte o arquivo `WHATSAPP_SETUP.md` para instruções detalhadas sobre:
+- Deploy da Evolution API no Railway
+- Configuração do Cloudflare Worker
+- Conexão via QR Code ou Pairing Code
 
-1. **Faça login** em: https://dash.cloudflare.com
-2. No menu lateral, clique em **"Workers & Pages"**
-3. Clique em **"Create application"**
-4. Clique em **"Create Worker"**
-5. Nome do worker: `telegram-proxy` (ou qualquer nome)
-6. Clique em **"Deploy"**
+### 3. Cloudflare Worker
 
----
+Consulte o arquivo `CLOUDFLARE_SETUP.md` para criar o proxy CORS necessário para envio de mensagens.
 
-### 3️⃣ Adicionar o código do Worker
+## Uso
 
-1. Após o deploy, clique em **"Edit code"**
-2. **Apague todo o código** que está lá
-3. **Copie todo o conteúdo** do arquivo `worker.js` (na raiz do projeto)
-4. **Cole no editor** do Cloudflare
-5. Clique em **"Deploy"** (ou Ctrl+S / Cmd+S)
+### Criar um incidente
 
----
+1. Selecione o tipo de incidente (Rompimento ou Manobra)
+2. Preencha os campos obrigatórios
+3. Clique em "Salvar incidente"
+4. O incidente será compartilhado com todos os usuários
 
-### 4️⃣ Copiar a URL do Worker
+### Gerar mensagem
 
-1. Após o deploy, você verá a URL do worker
-2. Será algo como: `https://telegram-proxy.SEU-USUARIO.workers.dev`
-3. **Copie esta URL completa**
+1. É obrigatório salvar o incidente antes de gerar a mensagem
+2. Selecione o tipo de status (Inicial, Atualização, Encerramento)
+3. Preencha os campos específicos do status
+4. Clique em "Gerar mensagem"
+5. Mensagem enviada automaticamente via WhatsApp (se configurado)
 
-**Exemplo:**
-```
-https://telegram-proxy.joaosilva123.workers.dev
-```
+### Carregar incidente
 
----
+1. Digite o número do incidente no campo de busca
+2. Clique no ícone de busca
+3. Ou clique em um incidente da lista
 
-### 5️⃣ Configurar no sistema
+## Validações
 
-1. **Me envie a URL** que você copiou
-2. Eu vou atualizar o `config-inline.js` com a URL
-3. Farei push das mudanças
-4. **Pronto!** O sistema vai funcionar em qualquer rede
+- **Data/Hora**: Formato `dd/mm/aaaa hh:mm`
+- **Campos numéricos**: Apenas números
+- **Nome do usuário**: Mínimo 4 caracteres, sem números
+- **Escalonamento automático**:
+  - HFC: Impacto ≥ 10
+  - GPON: Impacto ≥ 300
 
----
+## Tipos de status
 
-## ✅ Teste
+### Rompimento de fibra
+- **Inicial**: Incidente acionado, scan realizado, escalonamento, reagendamento
+- **Atualização**: Endereço do dano, causa, cabos afetados, percentual normalizado
+- **Encerramento**: Fato, causa, ação
 
-Depois de configurado, teste:
+### Manobra de fibra
+- **Inicial**: Manobra iniciada (sim/não com motivo)
+- **Atualização**: Percentual normalizado, observações
+- **Estouro de manobra**: Campos específicos para estouro
+- **Encerramento**: Fato, causa, ação
 
-1. **No computador da empresa**, gere uma mensagem
-2. Verifique se:
-   - ✅ Mensagem completa vai para o grupo
-   - ✅ Alertas vão para Nelson e Kelly (se impacto alto)
-   - ✅ Sem erros de CORS no Console
+## Tecnologias utilizadas
 
----
+- **Frontend**: HTML5, CSS3, JavaScript (ES6+)
+- **Armazenamento**: JSONBin.io (cloud), localStorage (fallback)
+- **Notificações**: Evolution API (WhatsApp), Telegram Bot API
+- **Proxy CORS**: Cloudflare Workers
+- **Hospedagem**: GitHub Pages
 
-## 🔒 Segurança
+## Desenvolvido por
 
-**O Worker é seguro?**
-- ✅ Sim! Roda no edge da Cloudflare
-- ✅ Não armazena dados
-- ✅ Apenas repassa requisições
-- ✅ Token nunca é exposto no código do browser
-
-**Quem pode usar?**
-- Apenas quem tiver acesso ao seu GitHub Pages
-- Você pode restringir por domínio se quiser
-
----
-
-## 💰 Custo
-
-**Plano Gratuito:**
-- ✅ 100.000 requisições/dia
-- ✅ Suficiente para seu caso de uso
-- ✅ Sem custo adicional
-
-**Se ultrapassar:**
-- US$ 0.50 por milhão de requisições adicionais
-- (improvável no seu caso)
-
----
-
-## 🆘 Problemas Comuns
-
-### Worker não funciona
-- Verifique se fez deploy após colar o código
-- Teste a URL no navegador (deve retornar erro JSON)
-
-### Ainda dá erro de CORS
-- Certifique-se que a URL está correta em config-inline.js
-- Limpe o cache do navegador (Ctrl+Shift+R)
-
-### "Exceeded plan limits"
-- Improvável, mas se acontecer, entre em contato comigo
-
----
-
-## 📞 Próximo Passo
-
-**Me envie a URL do seu Worker!**
-
-Exemplo: `https://telegram-proxy.seunome.workers.dev`
-
-Assim que você me enviar, eu configuro o sistema automaticamente!
+N6105010 & N5923221
