@@ -2,6 +2,47 @@
  * Funções de geração de mensagens
  */
 
+// Variável para controlar última mensagem gerada
+let ultimaMensagemGerada = null;
+let timestampUltimaMensagem = 0;
+
+/**
+ * Remove pontos duplicados da mensagem
+ */
+function removerPontosDuplicados(mensagem) {
+    // Remove dois ou mais pontos consecutivos, mantendo apenas um
+    return mensagem.replace(/\.{2,}/g, '.').replace(/:\s*:/g, ':');
+}
+
+/**
+ * Verifica se a mensagem pode ser gerada (evita duplicação em menos de 1 minuto)
+ */
+function verificarDuplicacaoMensagem(mensagem) {
+    const agora = Date.now();
+    const umMinuto = 60 * 1000;
+
+    // Normalizar mensagem para comparação (remover espaços extras)
+    const mensagemNormalizada = mensagem.trim().replace(/\s+/g, ' ');
+
+    if (ultimaMensagemGerada === mensagemNormalizada && (agora - timestampUltimaMensagem) < umMinuto) {
+        const tempoRestante = Math.ceil((umMinuto - (agora - timestampUltimaMensagem)) / 1000);
+        return {
+            duplicada: true,
+            tempoRestante: tempoRestante
+        };
+    }
+
+    return { duplicada: false };
+}
+
+/**
+ * Registra a última mensagem gerada
+ */
+function registrarMensagemGerada(mensagem) {
+    ultimaMensagemGerada = mensagem.trim().replace(/\s+/g, ' ');
+    timestampUltimaMensagem = Date.now();
+}
+
 // ===== GERAÇÃO DE MENSAGENS - ROMPIMENTO =====
 
 async function gerarMensagem() {
@@ -79,6 +120,19 @@ async function gerarMensagem() {
     } else if (tipoStatus === 'encerramento') {
         msg += gerarConteudoStatusEncerramento();
     }
+
+    // Remover pontos duplicados da mensagem
+    msg = removerPontosDuplicados(msg);
+
+    // Verificar se a mensagem é duplicada (menos de 1 minuto)
+    const verificacao = verificarDuplicacaoMensagem(msg);
+    if (verificacao.duplicada) {
+        alert(`❌ Esta mensagem já foi gerada há menos de 1 minuto.\nAguarde ${verificacao.tempoRestante} segundos para gerar novamente.`);
+        return;
+    }
+
+    // Registrar mensagem gerada
+    registrarMensagemGerada(msg);
 
     document.getElementById('output').textContent = msg;
     document.getElementById('outputContainer').classList.remove('hidden');
@@ -323,18 +377,31 @@ async function gerarMensagemManobra() {
         }
     } else if (tipoStatus === 'estouroManobra') {
         // Gerar mensagem de Estouro de Manobra com formato específico
-        msg = `## ESTOURO DE MANOBRA\n`;
+        const statusEstouroValue = document.getElementById('statusEstouroManobra')?.value || '';
+        const statusEstouroTexto = statusEstouroValue === 'atualizacao' ? 'ATUALIZAÇÃO' : (statusEstouroValue === 'encerramento' ? 'ENCERRAMENTO' : '');
+
+        msg = `## COP REDE INFORMA: INCIDENTE ${tipoImpactoTexto}\n`;
+        msg += `## MANOBRA DE FIBRA RESIDENCIAL: ESTOURO DE MANOBRA\n`;
         msg += `## MOTIVO: ${get('motivoEstouro')}\n`;
         msg += `## TICKET (MANOBRA): ${get('ticketEstouro')}\n`;
         msg += `## INCIDENTE (OUTAGE): ${get('incidenteEstouro')}\n`;
         msg += `## DATA/HORA DE INÍCIO: ${get('horarioInicioEstouro')}\n`;
-        msg += `## CIDADE: ${get('cidadeEstouro')}\n`;
-        msg += `## DISTRITO / ROTA OU ANEL: ${get('distritoEstouro')}\n`;
+        msg += `## CIDADE/CLUSTER: ${get('cidadeEstouro')}\n`;
+        msg += `## DISTRITO/ROTA: ${get('distritoEstouro')}\n`;
         msg += `## IMPACTO: ${get('impactoEstouro')}\n`;
         msg += `## BASE IMPACTADA: ${get('baseEstouro')}\n`;
         msg += `## ENDEREÇO: ${get('enderecoEstouro')}\n`;
-        msg += `## STATUS: ${get('statusEstouro')}\n`;
-        msg += `## DATA/HORA DE FECHAMENTO: ${get('horarioFechamentoEstouro')}\n`;
+        msg += `## TIPO DE STATUS: ${statusEstouroTexto}\n`;
+
+        if (statusEstouroValue === 'atualizacao') {
+            msg += `## STATUS DE ATUALIZAÇÃO: ${get('statusAtualizacaoEstouro')}\n`;
+        } else if (statusEstouroValue === 'encerramento') {
+            msg += `## DATA/HORA DE ENCERRAMENTO: ${get('horarioFechamentoEstouro')}\n`;
+            msg += `FATO: ${get('fatoEstouro')}\n`;
+            msg += `CAUSA: ${get('causaEstouro')}\n`;
+            msg += `AÇÃO: ${get('acaoEstouro')}\n`;
+            msg += `\n✅ SITUAÇÃO NORMALIZADA - SERVIÇO CONCLUÍDO COM SUCESSO`;
+        }
     } else if (tipoStatus === 'encerramento') {
         msg += `## DATA E HORA DE ENCERRAMENTO: ${get('encerramentoManobra')}\n`;
         msg += `FATO: ${get('fatoManobra')}\n`;
@@ -342,6 +409,19 @@ async function gerarMensagemManobra() {
         msg += `AÇÃO: ${get('acaoManobra')}\n`;
         msg += `\n✅ SITUAÇÃO NORMALIZADA - SERVIÇO CONCLUÍDO COM SUCESSO`;
     }
+
+    // Remover pontos duplicados da mensagem
+    msg = removerPontosDuplicados(msg);
+
+    // Verificar se a mensagem é duplicada (menos de 1 minuto)
+    const verificacaoManobra = verificarDuplicacaoMensagem(msg);
+    if (verificacaoManobra.duplicada) {
+        alert(`❌ Esta mensagem já foi gerada há menos de 1 minuto.\nAguarde ${verificacaoManobra.tempoRestante} segundos para gerar novamente.`);
+        return;
+    }
+
+    // Registrar mensagem gerada
+    registrarMensagemGerada(msg);
 
     document.getElementById('output').textContent = msg;
     document.getElementById('outputContainer').classList.remove('hidden');
