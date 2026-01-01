@@ -198,13 +198,13 @@
                         <option value="">-- Selecione --</option>
                         <option value="inicial">Inicial</option>
                         <option value="atualizacao">Atualização</option>
-                        <option value="estouroManobra">Estouro de manobra</option>
                         <option value="encerramento">Encerramento</option>
+                        <option value="estouroManobra">Estouro de manobra</option>
                     </select>
                 </div>
             </div>
 
-            <div class="form-row">
+            <div class="form-row" id="ticketIncidenteRow">
                 <div class="form-group">
                     <label for="ticketManobra">Ticket da manobra:</label>
                     <input type="text" id="ticketManobra">
@@ -216,7 +216,7 @@
                 </div>
             </div>
 
-            <div class="form-row">
+            <div class="form-row" id="cidadeDistritoRow">
                 <div class="form-group">
                     <label for="cidadeManobra">Cidade/Cluster:</label>
                     <input type="text" id="cidadeManobra">
@@ -228,7 +228,7 @@
                 </div>
             </div>
 
-            <div class="form-row">
+            <div class="form-row" id="impactoBaseRow">
                 <div class="form-group">
                     <label for="impactoManobra">Impacto:</label>
                     <input type="text" id="impactoManobra" oninput="Validators.validarCampoNumerico(this)">
@@ -240,7 +240,7 @@
                 </div>
             </div>
 
-            <div class="form-row">
+            <div class="form-row" id="responsavelExecutorRow">
                 <div class="form-group">
                     <label for="responsavelManobra">Responsável:</label>
                     <input type="text" id="responsavelManobra">
@@ -252,15 +252,15 @@
                 </div>
             </div>
 
-            <div class="form-row">
+            <div class="form-row" id="enderecoPropostoRow">
                 <div class="form-group">
                     <label for="enderecoManobra">Endereço:</label>
-                    <textarea id="enderecoManobra" rows="2"></textarea>
+                    <textarea id="enderecoManobra" rows="3"></textarea>
                 </div>
 
                 <div class="form-group">
                     <label for="propostoManobra">Proposto:</label>
-                    <textarea id="propostoManobra" rows="2"></textarea>
+                    <textarea id="propostoManobra" rows="3"></textarea>
                 </div>
             </div>
 

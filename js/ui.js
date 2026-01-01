@@ -30,16 +30,20 @@ async function salvarIncidente() {
     // Solicitar nome do usuário com validação
     let nomeUsuario = localStorage.getItem('nomeUsuario') || '';
     while (true) {
-        nomeUsuario = prompt('Insira seu nome (mínimo 4 caracteres, sem números):', nomeUsuario);
+        nomeUsuario = prompt('Insira seu nome (mínimo 3 caracteres, apenas letras):', nomeUsuario);
         if (!nomeUsuario) return false;
 
-        // Validação: mínimo 4 caracteres, sem números
-        if (nomeUsuario.length < 4) {
-            alert('❌ O nome deve ter no mínimo 4 caracteres.');
+        // Remover espaços extras
+        nomeUsuario = nomeUsuario.trim();
+
+        // Validação: mínimo 3 caracteres
+        if (nomeUsuario.length < 3) {
+            alert('❌ O nome deve ter no mínimo 3 caracteres.');
             continue;
         }
-        if (/\d/.test(nomeUsuario)) {
-            alert('❌ O nome não pode conter números.');
+        // Validação: apenas letras e espaços
+        if (!/^[a-zA-ZÀ-ÿ\s]+$/.test(nomeUsuario)) {
+            alert('❌ O nome deve conter apenas letras.');
             continue;
         }
         // Nome válido
@@ -356,6 +360,30 @@ function atualizarCamposStatusManobra() {
     const statusCampos = document.getElementById('statusCamposManobra');
     statusCampos.innerHTML = '';
 
+    // Lista de elementos a ocultar quando Estouro de Manobra for selecionado
+    const camposOcultar = [
+        'ticketIncidenteRow',
+        'cidadeDistritoRow',
+        'impactoBaseRow',
+        'responsavelExecutorRow',
+        'enderecoPropostoRow'
+    ];
+
+    // Mostrar ou ocultar campos baseado no tipo de status
+    if (tipo === 'estouroManobra') {
+        // Ocultar campos principais
+        camposOcultar.forEach(id => {
+            const elemento = document.getElementById(id);
+            if (elemento) elemento.classList.add('hidden');
+        });
+    } else {
+        // Mostrar campos principais
+        camposOcultar.forEach(id => {
+            const elemento = document.getElementById(id);
+            if (elemento) elemento.classList.remove('hidden');
+        });
+    }
+
     if (tipo === 'inicial') {
         statusCampos.innerHTML = getHtmlStatusInicialManobra();
     } else if (tipo === 'atualizacao') {
@@ -420,7 +448,7 @@ function getHtmlStatusInicial() {
         <div id="campoEquipe" class="motivo-field hidden"></div>
 
         <div class="form-group">
-            <label>Escalonamento:</label>
+            <label>Escalonamentos realizados:</label>
             <div class="checkbox-group inline">
                 <div class="escalonamento-container">
                     <div class="checkbox-option">
@@ -461,11 +489,18 @@ function getHtmlStatusInicial() {
                     </div>
                 </div>
             </div>
+            <div class="escalonamento-aviso" style="margin-top: 12px; padding: 10px; background: #fff3e0; border-left: 3px solid #ff9800; border-radius: 4px; font-size: 11px;">
+                <strong>⚠️ ATENÇÃO:</strong><br><br>
+                O escalonamento deve ser total e imediato quando: ≥ 10 nodes ou ≥ 300 naps.<br><br>
+                1. O escalonamento deve constar na primeira mensagem e no incidente.<br>
+                2. O escalonamento deve ser completo: supervisor, coordenador e gerente.<br><br>
+                <em>Caso o escalonamento seja sem sucesso informe isso no campo abaixo.</em>
+            </div>
         </div>
 
         <div class="form-group">
             <label for="outrasObservacoes">Outras observações:</label>
-            <textarea id="outrasObservacoes" rows="3"></textarea>
+            <textarea id="outrasObservacoes" rows="3" placeholder="Tentativa de contato com... sem sucesso."></textarea>
         </div>
     `;
 }
@@ -536,26 +571,29 @@ function getHtmlStatusAtualizacao() {
 
 function getHtmlStatusEncerramento() {
     return `
-        <div class="form-group">
-            <label for="encerramento">Data e hora de encerramento:</label>
-            <input type="text" id="encerramento" placeholder="dd/mm/aaaa hh:mm">
-            <div class="date-format">Formato obrigatório: dd/mm/aaaa hh:mm</div>
-            <div class="error-message" id="encerramento-error">Formato incorreto. Use: dd/mm/aaaa hh:mm</div>
+        <div class="form-row-two">
+            <div class="form-group">
+                <label for="encerramento">Data e hora de encerramento:</label>
+                <input type="text" id="encerramento" placeholder="dd/mm/aaaa hh:mm">
+                <div class="date-format">Formato obrigatório: dd/mm/aaaa hh:mm</div>
+                <div class="error-message" id="encerramento-error">Formato incorreto. Use: dd/mm/aaaa hh:mm</div>
+            </div>
+            <div class="form-group"></div>
         </div>
         <div class="form-row-fca">
             <div class="form-group-half">
                 <div class="form-group">
                     <label for="fato">Fato:</label>
-                    <textarea id="fato" rows="2"></textarea>
+                    <textarea id="fato" rows="3"></textarea>
                 </div>
                 <div class="form-group">
                     <label for="causa">Causa:</label>
-                    <textarea id="causa" rows="2"></textarea>
+                    <textarea id="causa" rows="3"></textarea>
                 </div>
             </div>
             <div class="form-group">
                 <label for="acao">Ação:</label>
-                <textarea id="acao" rows="5"></textarea>
+                <textarea id="acao" rows="7"></textarea>
             </div>
         </div>
     `;
@@ -614,16 +652,16 @@ function getHtmlStatusEncerramentoManobra() {
             <div class="form-group-half">
                 <div class="form-group">
                     <label for="fatoManobra">Fato:</label>
-                    <textarea id="fatoManobra" rows="2"></textarea>
+                    <textarea id="fatoManobra" rows="3"></textarea>
                 </div>
                 <div class="form-group">
                     <label for="causaManobra">Causa:</label>
-                    <textarea id="causaManobra" rows="2"></textarea>
+                    <textarea id="causaManobra" rows="3"></textarea>
                 </div>
             </div>
             <div class="form-group">
                 <label for="acaoManobra">Ação:</label>
-                <textarea id="acaoManobra" rows="5"></textarea>
+                <textarea id="acaoManobra" rows="7"></textarea>
             </div>
         </div>
     `;
@@ -772,8 +810,10 @@ function getHtmlStatusEstouroManobra() {
                 <input type="text" id="motivoEstouro">
             </div>
             <div class="form-group">
-                <label for="horarioInicioEstouro">Data/hora de início:</label>
-                <input type="text" id="horarioInicioEstouro">
+                <label for="horarioInicioEstouro">Data e hora de início:</label>
+                <input type="text" id="horarioInicioEstouro" placeholder="dd/mm/aaaa hh:mm">
+                <div class="date-format">Formato obrigatório: dd/mm/aaaa hh:mm</div>
+                <div class="error-message" id="horarioInicioEstouro-error">Formato incorreto. Use: dd/mm/aaaa hh:mm</div>
             </div>
         </div>
         <div class="form-row-two">
@@ -788,11 +828,11 @@ function getHtmlStatusEstouroManobra() {
         </div>
         <div class="form-row-two">
             <div class="form-group">
-                <label for="cidadeEstouro">Cidade:</label>
+                <label for="cidadeEstouro">Cidade/Cluster:</label>
                 <input type="text" id="cidadeEstouro">
             </div>
             <div class="form-group">
-                <label for="distritoEstouro">Distrito / Rota ou Anel:</label>
+                <label for="distritoEstouro">Distrito/Rota:</label>
                 <input type="text" id="distritoEstouro">
             </div>
         </div>
@@ -806,24 +846,69 @@ function getHtmlStatusEstouroManobra() {
                 <input type="text" id="baseEstouro" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
             </div>
         </div>
-        <div class="form-row-two">
-            <div class="form-group">
-                <label for="enderecoEstouro">Endereço:</label>
-                <textarea id="enderecoEstouro" class="adjustable" rows="2"></textarea>
-            </div>
-            <div class="form-group">
-                <label for="statusEstouro">Status:</label>
-                <textarea id="statusEstouro" class="adjustable" rows="2"></textarea>
-            </div>
+        <div class="form-group">
+            <label for="enderecoEstouro">Endereço:</label>
+            <textarea id="enderecoEstouro" class="adjustable" rows="2"></textarea>
         </div>
         <div class="form-row-two">
             <div class="form-group">
-                <label for="horarioFechamentoEstouro">Data/hora de fechamento:</label>
-                <input type="text" id="horarioFechamentoEstouro">
+                <label for="statusEstouroManobra">Status do estouro de manobra:</label>
+                <select id="statusEstouroManobra" onchange="atualizarCamposStatusEstouro()">
+                    <option value="">-- Selecione --</option>
+                    <option value="atualizacao">Atualização</option>
+                    <option value="encerramento">Encerramento</option>
+                </select>
             </div>
             <div class="form-group"></div>
         </div>
+        <div id="camposStatusEstouro"></div>
     `;
+}
+
+function atualizarCamposStatusEstouro() {
+    const statusEstouro = document.getElementById('statusEstouroManobra').value;
+    const camposContainer = document.getElementById('camposStatusEstouro');
+
+    if (!camposContainer) return;
+
+    if (statusEstouro === 'atualizacao') {
+        camposContainer.innerHTML = `
+            <div class="form-group">
+                <label for="statusAtualizacaoEstouro">Status de atualização:</label>
+                <textarea id="statusAtualizacaoEstouro" class="adjustable" rows="3"></textarea>
+            </div>
+        `;
+    } else if (statusEstouro === 'encerramento') {
+        camposContainer.innerHTML = `
+            <div class="form-row-fca">
+                <div class="form-group-half">
+                    <div class="form-group">
+                        <label for="fatoEstouro">Fato:</label>
+                        <textarea id="fatoEstouro" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="causaEstouro">Causa:</label>
+                        <textarea id="causaEstouro" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="acaoEstouro">Ação:</label>
+                    <textarea id="acaoEstouro" rows="7"></textarea>
+                </div>
+            </div>
+            <div class="form-row-two">
+                <div class="form-group">
+                    <label for="horarioFechamentoEstouro">Data e hora de fechamento:</label>
+                    <input type="text" id="horarioFechamentoEstouro" placeholder="dd/mm/aaaa hh:mm">
+                    <div class="date-format">Formato obrigatório: dd/mm/aaaa hh:mm</div>
+                    <div class="error-message" id="horarioFechamentoEstouro-error">Formato incorreto. Use: dd/mm/aaaa hh:mm</div>
+                </div>
+                <div class="form-group"></div>
+            </div>
+        `;
+    } else {
+        camposContainer.innerHTML = '';
+    }
 }
 
 // ===== CONTINUA NO PRÓXIMO ARQUIVO =====
