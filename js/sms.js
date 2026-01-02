@@ -55,23 +55,35 @@ class NotificationService {
         let outage = '';
         let cidade = '';
         let impacto = '';
+        let horarioInicial = '';
+        let horarioAcionamento = '';
+        let tipoAlerta = '';
 
         if (tipo === 'rompimento') {
             outage = dados.incidente || 'N/A';
             cidade = dados.cidade || 'N/A';
             impacto = dados.impacto || '0';
+            horarioInicial = dados.abertura || 'N/A';
+            horarioAcionamento = dados.acionamento || 'AGUARDANDO';
+            tipoAlerta = 'ROMPIMENTO';
         } else if (tipo === 'manobra') {
             outage = dados.incidenteManobra || 'N/A';
             cidade = dados.cidadeManobra || 'N/A';
             impacto = dados.impactoManobra || '0';
+            horarioInicial = dados.horarioInicioManobra || 'N/A';
+            horarioAcionamento = dados.horarioAcionamentoManobra || 'N/A';
+            tipoAlerta = '⚙️ MANOBRA';
         }
 
         // Construir mensagem formatada (suporta formatação WhatsApp e Telegram)
-        const message = `${prefix}
+        let message = `${prefix}
 
+🔔 *Tipo:* ${tipoAlerta}
 📋 *Outage:* ${outage}
 📍 *Cidade:* ${cidade}
-⚠️ *Impacto:* ${impacto}`;
+⚠️ *Impacto:* ${impacto}
+🕐 *Horário Inicial:* ${horarioInicial}
+🚀 *Horário Acionamento:* ${horarioAcionamento}`;
 
         return message;
     }

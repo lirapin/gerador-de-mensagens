@@ -343,6 +343,8 @@ async function gerarMensagemManobra() {
     msg += `## ÁREA/DISTRITO: ${get('distritoManobra')}\n`;
     msg += `## IMPACTO: ${get('impactoManobra')}${alertaImpactoManobra}\n`;
     msg += `## BASE AFETADA: ${get('baseManobra')}\n`;
+    msg += `## DATA E HORA DE INÍCIO: ${get('horarioInicioManobra') || 'N/A'}\n`;
+    msg += `## DATA E HORA DE ACIONAMENTO: ${get('horarioAcionamentoManobra') || 'AGUARDANDO DISPONIBILIDADE TÉCNICA'}\n`;
     msg += `## RESPONSÁVEL: ${get('responsavelManobra')}\n`;
     msg += `## EXECUTOR: ${get('executorManobra')}\n`;
     msg += `## ENDEREÇO: ${get('enderecoManobra')}\n`;
