@@ -71,7 +71,6 @@ class NotificationService {
             cidade = dados.cidadeManobra || 'N/A';
             impacto = dados.impactoManobra || '0';
             horarioInicial = dados.horarioInicioManobra || 'N/A';
-            horarioAcionamento = dados.horarioAcionamentoManobra || 'N/A';
             tipoAlerta = '⚙️ MANOBRA';
         }
 
@@ -82,8 +81,12 @@ class NotificationService {
 📋 *Outage:* ${outage}
 📍 *Cidade:* ${cidade}
 ⚠️ *Impacto:* ${impacto}
-🕐 *Horário Inicial:* ${horarioInicial}
-🚀 *Horário Acionamento:* ${horarioAcionamento}`;
+🕐 *Horário Inicial:* ${horarioInicial}`;
+
+        // Adicionar horário de acionamento apenas para rompimento
+        if (tipo === 'rompimento') {
+            message += `\n🚀 *Horário Acionamento:* ${horarioAcionamento}`;
+        }
 
         return message;
     }
