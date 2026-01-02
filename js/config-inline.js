@@ -72,7 +72,7 @@ window.CONFIG = window.CONFIG || {
         },
 
         template: {
-            prefix: '🚨 COP REDE'
+            prefix: '🚨 COP REDE INFORMA:'
         }
     }
 };

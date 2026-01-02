@@ -144,6 +144,8 @@ function carregarDadosManobra(dados) {
     document.getElementById('executorManobra').value = dados.executorManobra || '';
     document.getElementById('enderecoManobra').value = dados.enderecoManobra || '';
     document.getElementById('propostoManobra').value = dados.propostoManobra || '';
+    document.getElementById('horarioInicioManobra').value = dados.horarioInicioManobra || '';
+    document.getElementById('horarioAcionamentoManobra').value = dados.horarioAcionamentoManobra || '';
 }
 
 /**
@@ -289,7 +291,9 @@ function coletarDadosFormulario(tipo) {
             responsavelManobra: document.getElementById('responsavelManobra').value,
             executorManobra: document.getElementById('executorManobra').value,
             enderecoManobra: document.getElementById('enderecoManobra').value,
-            propostoManobra: document.getElementById('propostoManobra').value
+            propostoManobra: document.getElementById('propostoManobra').value,
+            horarioInicioManobra: document.getElementById('horarioInicioManobra').value,
+            horarioAcionamentoManobra: document.getElementById('horarioAcionamentoManobra').value
         };
     }
     return null;
@@ -329,6 +333,8 @@ function limparFormularios() {
     document.getElementById('executorManobra').value = '';
     document.getElementById('enderecoManobra').value = '';
     document.getElementById('propostoManobra').value = '';
+    document.getElementById('horarioInicioManobra').value = '';
+    document.getElementById('horarioAcionamentoManobra').value = '';
     document.getElementById('statusManobra').value = '';
     document.getElementById('statusCamposManobra').innerHTML = '';
 }
