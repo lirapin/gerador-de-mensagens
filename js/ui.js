@@ -207,14 +207,14 @@ function criarElementoIncidente(incidente) {
         (incidente.dados.statusEncerrado === true) ||
         (incidente.ultimoStatus === 'encerramento')
     );
-    const statusTag = isEncerrado ? ' <span style="color: #f44336; font-weight: bold;">[ENCERRADO]</span>' : '';
+    const statusTag = isEncerrado ? ' <span class="incident-status-closed">[ENCERRADO]</span>' : '';
 
     item.innerHTML = `
         <div>
             <div class="incident-id">${incidente.incidente_id}${statusTag}
-                <small style="color: #666;">(por ${incidente.criado_por})</small>
+                <small class="incident-author">(por ${incidente.criado_por})</small>
             </div>
-            <div class="incident-info" style="font-size: 11px;">
+            <div class="incident-info">
                 Atualizado: ${new Date(incidente.data_atualizacao || incidente.dataCriacao).toLocaleString()}
             </div>
         </div>
@@ -492,7 +492,7 @@ function getHtmlStatusInicial() {
                     </div>
                 </div>
             </div>
-            <div class="escalonamento-aviso" style="margin-top: 12px; padding: 10px; background: #fff3e0; border-left: 3px solid #ff9800; border-radius: 4px; font-size: 11px;">
+            <div class="escalonamento-aviso">
                 <strong>⚠️ ATENÇÃO:</strong><br><br>
                 O escalonamento deve ser total e imediato quando: ≥ 10 nodes ou ≥ 300 naps.<br><br>
                 1. O escalonamento deve constar na primeira mensagem e no incidente.<br>
@@ -741,7 +741,7 @@ function mostrarCampoEquipe() {
                     <option value="OUTROS">Outros</option>
                 </select>
             </div>
-            <div id="campoOutrosMotivo" class="hidden" style="margin-top: 12px;">
+            <div id="campoOutrosMotivo" class="campo-outros-motivo hidden">
                 <label for="outrosMotivoTexto">Informe o motivo:</label>
                 <input type="text" id="outrosMotivoTexto">
             </div>

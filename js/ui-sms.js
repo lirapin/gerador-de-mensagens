@@ -31,26 +31,14 @@ function showSMSFeedback(result) {
 
     // Criar elemento de feedback
     const feedback = document.createElement('div');
-    feedback.style.cssText = `
-        margin-top: 15px;
-        padding: 12px;
-        border-radius: 6px;
-        font-size: 14px;
-        border-left: 4px solid;
-    `;
-
     if (result.success) {
-        feedback.style.backgroundColor = '#d4edda';
-        feedback.style.borderColor = '#28a745';
-        feedback.style.color = '#155724';
+        feedback.className = 'sms-feedback success';
         feedback.innerHTML = `
             <strong><i class="fas fa-check-circle"></i> Notificação enviada via Telegram!</strong><br>
             ${result.message}
         `;
     } else {
-        feedback.style.backgroundColor = '#f8d7da';
-        feedback.style.borderColor = '#dc3545';
-        feedback.style.color = '#721c24';
+        feedback.className = 'sms-feedback error';
         feedback.innerHTML = `
             <strong><i class="fas fa-exclamation-circle"></i> Erro ao enviar notificação</strong><br>
             ${result.message}
@@ -63,7 +51,6 @@ function showSMSFeedback(result) {
         oldFeedback.remove();
     }
 
-    feedback.className = 'sms-feedback';
     outputContainer.appendChild(feedback);
 
     // Remover após 10 segundos
