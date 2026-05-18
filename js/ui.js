@@ -580,7 +580,6 @@ function getHtmlStatusEncerramento() {
             <div class="form-group">
                 <label for="encerramento">Data e hora de encerramento:</label>
                 <input type="text" id="encerramento" placeholder="dd/mm/aaaa hh:mm">
-                <div class="date-format">Formato obrigatório: dd/mm/aaaa hh:mm</div>
                 <div class="error-message" id="encerramento-error">Formato incorreto. Use: dd/mm/aaaa hh:mm</div>
             </div>
             <div class="form-group"></div>
@@ -648,7 +647,6 @@ function getHtmlStatusEncerramentoManobra() {
             <div class="form-group">
                 <label for="encerramentoManobra">Data e hora de encerramento:</label>
                 <input type="text" id="encerramentoManobra" placeholder="dd/mm/aaaa hh:mm">
-                <div class="date-format">Formato obrigatório: dd/mm/aaaa hh:mm</div>
                 <div class="error-message" id="encerramentoManobra-error">Formato incorreto. Use: dd/mm/aaaa hh:mm</div>
             </div>
             <div class="form-group"></div>
@@ -817,7 +815,6 @@ function getHtmlStatusEstouroManobra() {
             <div class="form-group">
                 <label for="horarioInicioEstouro">Data e hora de início:</label>
                 <input type="text" id="horarioInicioEstouro" placeholder="dd/mm/aaaa hh:mm">
-                <div class="date-format">Formato obrigatório: dd/mm/aaaa hh:mm</div>
                 <div class="error-message" id="horarioInicioEstouro-error">Formato incorreto. Use: dd/mm/aaaa hh:mm</div>
             </div>
         </div>
@@ -905,7 +902,6 @@ function atualizarCamposStatusEstouro() {
                 <div class="form-group">
                     <label for="horarioFechamentoEstouro">Data e hora de fechamento:</label>
                     <input type="text" id="horarioFechamentoEstouro" placeholder="dd/mm/aaaa hh:mm">
-                    <div class="date-format">Formato obrigatório: dd/mm/aaaa hh:mm</div>
                     <div class="error-message" id="horarioFechamentoEstouro-error">Formato incorreto. Use: dd/mm/aaaa hh:mm</div>
                 </div>
                 <div class="form-group"></div>
