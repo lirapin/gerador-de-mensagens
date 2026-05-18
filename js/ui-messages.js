@@ -11,7 +11,97 @@ let timestampUltimaMensagem = 0;
  */
 function removerPontosDuplicados(mensagem) {
     // Remove dois ou mais pontos consecutivos, mantendo apenas um
-    return mensagem.replace(/\.{2,}/g, '.').replace(/:\s*:/g, ':');
+    return mensagem.replace(/\.{2,}/g, '.').replace(/\.\s+\./g, '.').replace(/:\s*:/g, ':');
+}
+
+function removerPontoFinal(texto) {
+    return texto.trim().replace(/\.+$/g, '').trim();
+}
+
+function removerTelefones(texto) {
+    return texto.replace(/\+?\d[\d\s().-]{7,}\d/g, '').replace(/[ \t]+$/gm, '').trim();
+}
+
+function simplificarNome(nomes, nomesRepetidos) {
+    const conectores = ['DE', 'DA', 'DAS', 'DO', 'DOS'];
+    const partes = nomes.filter(nome => nome && !conectores.includes(nome));
+
+    if (partes.length === 0) return '';
+    if (nomesRepetidos.has(partes[0]) && partes.length > 1) {
+        return `${partes[0]} ${partes[1]}`;
+    }
+
+    return partes[0];
+}
+
+function extrairEscalonamentoSemSucesso(linha) {
+    let cargo = '';
+
+    if (/\b(SUP|SUP\.|SUPERVISOR|SUPERVISORA)\b/.test(linha)) {
+        cargo = 'SUPERVISOR';
+    } else if (/\b(COORD|COORD\.|COORDENADOR|COORDENADORA)\b/.test(linha)) {
+        cargo = 'COORDENADOR';
+    } else if (/\b(GER|GER\.|GERENTE)\b/.test(linha)) {
+        cargo = 'GERENTE';
+    } else {
+        return null;
+    }
+
+    const palavrasIgnoradas = [
+        'SUP', 'SUPERVISOR', 'SUPERVISORA', 'COORD', 'COORDENADOR', 'COORDENADORA',
+        'GER', 'GERENTE', 'TECNICO', 'TÉCNICO', 'PLANTAO', 'PLANTÃO', 'FIBRA',
+        'GERAL', 'REDE', 'MASSIVO', 'DE', 'DA', 'DAS', 'DO', 'DOS'
+    ];
+    const nomes = removerTelefones(linha)
+        .replace(/[.:;,\-–—]/g, ' ')
+        .split(/\s+/)
+        .map(parte => parte.trim())
+        .filter(parte => /^[A-ZÀ-Ý]{2,}$/.test(parte) && !palavrasIgnoradas.includes(parte));
+
+    return { cargo, nomes };
+}
+
+function lapidarObservacoesEscalonamento(texto) {
+    const textoSemTelefones = removerTelefones(texto.toUpperCase());
+
+    if (!/SEM SUCESSO/.test(textoSemTelefones)) {
+        return removerPontoFinal(textoSemTelefones);
+    }
+
+    const linhas = textoSemTelefones.split(/\r?\n|;/).map(linha => linha.trim()).filter(Boolean);
+    const escalonamentos = linhas.map(extrairEscalonamentoSemSucesso).filter(Boolean);
+
+    if (escalonamentos.length === 0) {
+        return removerPontoFinal(textoSemTelefones);
+    }
+
+    const primeirosNomes = escalonamentos.map(item => item.nomes[0]).filter(Boolean);
+    const nomesRepetidos = new Set(primeirosNomes.filter((nome, index) => primeirosNomes.indexOf(nome) !== index));
+    const primeiroEscalonamento = linhas.findIndex(linha => extrairEscalonamentoSemSucesso(linha));
+    let prefixo = linhas.slice(0, primeiroEscalonamento).join(' ').replace(/[:.;\s]+$/g, '');
+
+    if (!prefixo) {
+        prefixo = 'TENTATIVA DE ESCALONAMENTO SEM SUCESSO';
+    }
+    if (!/\bCOM$/i.test(prefixo)) {
+        prefixo += ' COM';
+    }
+
+    const partes = escalonamentos
+        .map(item => {
+            const nome = simplificarNome(item.nomes, nomesRepetidos);
+            return nome ? `${item.cargo} ${nome}` : '';
+        })
+        .filter(Boolean);
+
+    if (partes.length === 0) {
+        return removerPontoFinal(textoSemTelefones);
+    }
+    if (partes.length === 1) {
+        return `${prefixo} ${partes[0]}`;
+    }
+
+    return `${prefixo} ${partes.slice(0, -1).join('; ')} E ${partes[partes.length - 1]}`;
 }
 
 /**
@@ -225,9 +315,9 @@ function gerarConteudoStatusInicial() {
     }
 
     // Outras observações
-    const outrasObservacoes = document.getElementById('outrasObservacoes')?.value.toUpperCase().trim() || '';
+    const outrasObservacoes = document.getElementById('outrasObservacoes')?.value.trim() || '';
     if (outrasObservacoes) {
-        statusInfo.push(outrasObservacoes);
+        statusInfo.push(lapidarObservacoesEscalonamento(outrasObservacoes));
     }
 
     if (statusInfo.length > 0) {
@@ -244,7 +334,7 @@ function gerarConteudoStatusAtualizacao() {
     const causa = document.getElementById('causaDano')?.value.toUpperCase() || '';
     const cabos = document.getElementById('cabosAfetados')?.value.toUpperCase() || '';
     const percentual = document.getElementById('validado')?.value || '';
-    const novaAtualizacao = document.getElementById('novaAtualizacao')?.value.toUpperCase().trim() || '';
+    const novaAtualizacao = document.getElementById('novaAtualizacao')?.value.trim() || '';
 
     let statusInfo = [];
 
@@ -266,7 +356,7 @@ function gerarConteudoStatusAtualizacao() {
 
     // Adicionar nova atualização (texto livre)
     if (novaAtualizacao) {
-        statusInfo.push(novaAtualizacao);
+        statusInfo.push(lapidarObservacoesEscalonamento(novaAtualizacao));
     }
 
     if (statusInfo.length > 0) {
@@ -278,9 +368,9 @@ function gerarConteudoStatusAtualizacao() {
 
 function gerarConteudoStatusEncerramento() {
     const encerramento = document.getElementById('encerramento')?.value.toUpperCase() || '';
-    const fato = document.getElementById('fato')?.value.toUpperCase() || '';
-    const causa = document.getElementById('causa')?.value.toUpperCase() || '';
-    const acao = document.getElementById('acao')?.value.toUpperCase() || '';
+    const fato = removerPontoFinal(document.getElementById('fato')?.value.toUpperCase() || '');
+    const causa = removerPontoFinal(document.getElementById('causa')?.value.toUpperCase() || '');
+    const acao = removerPontoFinal(document.getElementById('acao')?.value.toUpperCase() || '');
 
     let msg = `## DATA E HORA DE ENCERRAMENTO: ${encerramento}\n`;
     msg += `FATO: ${fato}. CAUSA: ${causa}. AÇÃO: ${acao}.\n`;

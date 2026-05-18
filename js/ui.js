@@ -496,7 +496,9 @@ function getHtmlStatusInicial() {
                 <strong>⚠️ ATENÇÃO:</strong><br><br>
                 O escalonamento deve ser total e imediato quando: ≥ 10 nodes ou ≥ 300 naps.<br><br>
                 1. O escalonamento deve constar na primeira mensagem e no incidente.<br>
-                2. O escalonamento deve ser completo: supervisor, coordenador e gerente.<br><br>
+                2. O escalonamento deve ser completo: supervisor, coordenador e gerente.<br>
+                3. O escalonamento também deve ser completo caso não haja equipe disponível para acionamento.<br>
+                4. Em todo caso massivo, nosso gerente - Marcos Rogério - também deve ser escalonado, inclusive se não houver disponibilidade técnica.<br><br>
                 <em>Caso o escalonamento seja sem sucesso informe isso no campo abaixo.</em>
             </div>
         </div>

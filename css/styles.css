@@ -472,6 +472,10 @@ button:focus-visible,
     gap: 12px 18px;
 }
 
+.form-group-inline {
+    margin-bottom: 8px;
+}
+
 .inline-radio > label,
 .form-group-inline > label {
     min-width: 150px;
