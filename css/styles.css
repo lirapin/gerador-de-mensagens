@@ -498,6 +498,10 @@ button:focus-visible,
     flex-direction: row;
 }
 
+.impact-radio-group {
+    gap: 6px;
+}
+
 .radio-option,
 .checkbox-option {
     display: flex;
