@@ -255,6 +255,12 @@ button:active,
     transform: translateY(0);
 }
 
+button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+}
+
 button:focus-visible,
 .popup-close-btn:focus-visible {
     outline: 3px solid rgba(211, 47, 47, 0.25);

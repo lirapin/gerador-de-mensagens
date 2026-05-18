@@ -10,6 +10,80 @@ let incidenteAtual = null;
 
 // ===== FUNÇÕES DE GERENCIAMENTO DE INCIDENTES =====
 
+function atualizarBotoesGerarMensagem() {
+    const mensagem = 'Você deve salvar esse incidente antes de gerar a mensagem';
+    const botoes = [
+        document.getElementById('gerarMensagemBtn'),
+        document.getElementById('gerarMensagemManobraBtn')
+    ];
+
+    botoes.forEach(botao => {
+        if (!botao) return;
+        botao.disabled = !window.incidenteSalvo;
+        botao.title = window.incidenteSalvo ? '' : mensagem;
+    });
+}
+
+function obterIncidenteSugerido(tipoMensagem) {
+    if (tipoMensagem === 'rompimento') {
+        return document.getElementById('incidente')?.value.trim() || '';
+    }
+
+    return document.getElementById('incidenteManobra')?.value.trim() ||
+           document.getElementById('incidenteEstouro')?.value.trim() ||
+           '';
+}
+
+function solicitarIncidenteId(tipoMensagem) {
+    let incidenteId = document.getElementById('incidenteId').value.trim();
+    const sugestao = obterIncidenteSugerido(tipoMensagem);
+
+    while (!incidenteId) {
+        incidenteId = prompt('Insira o número do incidente:', sugestao || '');
+        if (incidenteId === null) return '';
+
+        incidenteId = incidenteId.trim();
+        if (!incidenteId) {
+            alert('O número do incidente não pode ficar em branco.');
+        }
+    }
+
+    document.getElementById('incidenteId').value = incidenteId;
+    return incidenteId;
+}
+
+function incidenteJaSalvo(incidenteId) {
+    return window.incidenteSalvo && incidenteAtual === incidenteId;
+}
+
+function solicitarNomeUsuario() {
+    let nomeUsuario = localStorage.getItem('nomeUsuario') || '';
+
+    while (true) {
+        nomeUsuario = prompt('Insira seu nome (mínimo 3 caracteres, apenas letras):', nomeUsuario);
+        if (nomeUsuario === null) return '';
+
+        nomeUsuario = nomeUsuario.trim();
+
+        if (!nomeUsuario) {
+            alert('❌ O nome não pode ficar em branco.');
+            continue;
+        }
+        if (nomeUsuario.length < 3) {
+            alert('❌ O nome deve ter no mínimo 3 caracteres.');
+            continue;
+        }
+        if (!/^[a-zA-ZÀ-ÿ\s]+$/.test(nomeUsuario)) {
+            alert('❌ O nome deve conter apenas letras.');
+            continue;
+        }
+
+        localStorage.setItem('nomeUsuario', nomeUsuario);
+        localStorage.setItem('usuario_incidentes', nomeUsuario);
+        return nomeUsuario;
+    }
+}
+
 /**
  * Salva um incidente
  */
@@ -20,45 +94,23 @@ async function salvarIncidente() {
         return false;
     }
 
-    let incidenteId = document.getElementById('incidenteId').value.trim();
-    if (!incidenteId) {
-        incidenteId = prompt('Insira o número do incidente:');
-        if (!incidenteId) return false;
-        document.getElementById('incidenteId').value = incidenteId;
-    }
-
-    // Solicitar nome do usuário com validação
-    let nomeUsuario = localStorage.getItem('nomeUsuario') || '';
-    while (true) {
-        nomeUsuario = prompt('Insira seu nome (mínimo 3 caracteres, apenas letras):', nomeUsuario);
-        if (!nomeUsuario) return false;
-
-        // Remover espaços extras
-        nomeUsuario = nomeUsuario.trim();
-
-        // Validação: mínimo 3 caracteres
-        if (nomeUsuario.length < 3) {
-            alert('❌ O nome deve ter no mínimo 3 caracteres.');
-            continue;
-        }
-        // Validação: apenas letras e espaços
-        if (!/^[a-zA-ZÀ-ÿ\s]+$/.test(nomeUsuario)) {
-            alert('❌ O nome deve conter apenas letras.');
-            continue;
-        }
-        // Nome válido
-        localStorage.setItem('nomeUsuario', nomeUsuario);
-        break;
-    }
-
     const dados = coletarDadosFormulario(tipoMensagem);
     if (!dados) return false;
 
+    let incidenteId = solicitarIncidenteId(tipoMensagem);
+    if (!incidenteId) {
+        return false;
+    }
+
+    const nomeUsuario = incidenteJaSalvo(incidenteId) ? null : solicitarNomeUsuario();
+    if (!incidenteJaSalvo(incidenteId) && !nomeUsuario) return false;
+
     try {
-        await jsonBinService.salvarIncidente(incidenteId, tipoMensagem, dados);
+        await jsonBinService.salvarIncidente(incidenteId, tipoMensagem, dados, nomeUsuario);
         incidenteAtual = incidenteId;
         // Marcar que o incidente foi salvo
         window.incidenteSalvo = true;
+        atualizarBotoesGerarMensagem();
         await atualizarListaIncidentes();
         alert('✅ Incidente ' + incidenteId + ' salvo e COMPARTILHADO com todos os usuários!');
 
@@ -68,6 +120,7 @@ async function salvarIncidente() {
     } catch (error) {
         alert('⚠️ Incidente salvo localmente (sem compartilhamento)');
         window.incidenteSalvo = true;
+        atualizarBotoesGerarMensagem();
         return true;
     }
 }
@@ -101,6 +154,8 @@ async function carregarIncidentePorId(incidenteId, silencioso = false) {
         }
 
         incidenteAtual = incidente.incidente_id;
+        window.incidenteSalvo = true;
+        atualizarBotoesGerarMensagem();
         await atualizarListaIncidentes();
 
         // Só mostrar alerta se não for chamada silenciosa
@@ -303,6 +358,7 @@ function coletarDadosFormulario(tipo) {
 function limparFormularios() {
     // Resetar flag de incidente salvo
     window.incidenteSalvo = false;
+    atualizarBotoesGerarMensagem();
 
     // Formulário de Rompimento
     document.getElementById('topologia').value = '';

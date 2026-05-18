@@ -786,10 +786,16 @@ function fecharPopupMensagem() {
 
 // Inicializar flag de incidente salvo
 window.incidenteSalvo = false;
+if (typeof atualizarBotoesGerarMensagem === 'function') {
+    atualizarBotoesGerarMensagem();
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     // Inicializar flag de incidente salvo
     window.incidenteSalvo = false;
+    if (typeof atualizarBotoesGerarMensagem === 'function') {
+        atualizarBotoesGerarMensagem();
+    }
 
     // Atualizar lista de incidentes ao carregar
     atualizarListaIncidentes();

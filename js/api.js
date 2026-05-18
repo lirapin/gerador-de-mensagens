@@ -61,7 +61,7 @@ class JSONBinService {
     /**
      * Salva um incidente específico
      */
-    async salvarIncidente(incidenteId, tipo, dados) {
+    async salvarIncidente(incidenteId, tipo, dados, usuario) {
         try {
             const todosIncidentes = await this.buscarTodosIncidentes();
             const incidenteExistente = todosIncidentes.find(inc => inc.incidente_id === incidenteId);
@@ -74,7 +74,7 @@ class JSONBinService {
                     incidente_id: incidenteId,
                     tipo: tipo,
                     dados: dados,
-                    criado_por: this.getUsuario(),
+                    criado_por: usuario || this.getUsuario(),
                     data_criacao: new Date().toISOString(),
                     data_atualizacao: new Date().toISOString()
                 });
@@ -84,7 +84,7 @@ class JSONBinService {
             return true;
         } catch (error) {
             console.error('Erro ao salvar incidente:', error);
-            this.salvarLocalmente(incidenteId, tipo, dados);
+            this.salvarLocalmente(incidenteId, tipo, dados, usuario);
             throw error;
         }
     }
@@ -187,11 +187,12 @@ class JSONBinService {
     /**
      * Salva incidente no localStorage
      */
-    salvarLocalmente(incidenteId, tipo, dados) {
+    salvarLocalmente(incidenteId, tipo, dados, usuario) {
         const incidentes = JSON.parse(localStorage.getItem('incidentes_locais') || '{}');
         incidentes[incidenteId] = {
             tipo,
             dados,
+            criado_por: usuario || localStorage.getItem('nomeUsuario') || 'Usuário',
             dataCriacao: new Date().toISOString()
         };
         localStorage.setItem('incidentes_locais', JSON.stringify(incidentes));

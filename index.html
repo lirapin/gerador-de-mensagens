@@ -159,7 +159,7 @@
 
             <div class="button-group">
                 <button onclick="salvarIncidente()" class="btn-copy"><i class="fas fa-save"></i> Salvar incidente</button>
-                <button onclick="gerarMensagem()"><i class="fas fa-file-alt"></i> Gerar mensagem</button>
+                <button id="gerarMensagemBtn" onclick="gerarMensagem()" disabled title="Você deve salvar esse incidente antes de gerar a mensagem"><i class="fas fa-file-alt"></i> Gerar mensagem</button>
             </div>
         </div>
 
@@ -275,7 +275,7 @@
 
             <div class="button-group">
                 <button onclick="salvarIncidente()" class="btn-copy"><i class="fas fa-save"></i> Salvar incidente</button>
-                <button onclick="gerarMensagemManobra()"><i class="fas fa-file-alt"></i> Gerar mensagem</button>
+                <button id="gerarMensagemManobraBtn" onclick="gerarMensagemManobra()" disabled title="Você deve salvar esse incidente antes de gerar a mensagem"><i class="fas fa-file-alt"></i> Gerar mensagem</button>
             </div>
         </div>
 
