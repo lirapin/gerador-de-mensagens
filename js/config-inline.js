@@ -39,7 +39,7 @@ window.CONFIG = window.CONFIG || {
             apiKey: 'BCCA054B44D0-4F28-B60A-0C9C1410221F',
 
             // Nome da instância conectada
-            instance: 'Kelly',
+            instance: 'NIA',
 
             // URL do Cloudflare Worker (proxy para resolver CORS)
             workerUrl: 'https://bitter-feather-847dwhatsapp-proxy.nelson-soares.workers.dev',
