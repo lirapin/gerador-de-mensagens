@@ -36,10 +36,10 @@ window.CONFIG = window.CONFIG || {
             apiUrl: 'https://evolution-api-production-b976.up.railway.app',
 
             // Chave de API da Evolution
-            apiKey: 'coprede2026',
+            apiKey: 'BCCA054B44D0-4F28-B60A-0C9C1410221F',
 
             // Nome da instância conectada
-            instance: 'Cop Rede',
+            instance: 'Kelly',
 
             // URL do Cloudflare Worker (proxy para resolver CORS)
             workerUrl: 'https://bitter-feather-847dwhatsapp-proxy.nelson-soares.workers.dev',
