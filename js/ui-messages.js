@@ -63,45 +63,8 @@ function extrairEscalonamentoSemSucesso(linha) {
 
 function lapidarObservacoesEscalonamento(texto) {
     const textoSemTelefones = removerTelefones(texto.toUpperCase());
+    return removerPontoFinal(textoSemTelefones);
 
-    if (!/SEM SUCESSO/.test(textoSemTelefones)) {
-        return removerPontoFinal(textoSemTelefones);
-    }
-
-    const linhas = textoSemTelefones.split(/\r?\n|;/).map(linha => linha.trim()).filter(Boolean);
-    const escalonamentos = linhas.map(extrairEscalonamentoSemSucesso).filter(Boolean);
-
-    if (escalonamentos.length === 0) {
-        return removerPontoFinal(textoSemTelefones);
-    }
-
-    const primeirosNomes = escalonamentos.map(item => item.nomes[0]).filter(Boolean);
-    const nomesRepetidos = new Set(primeirosNomes.filter((nome, index) => primeirosNomes.indexOf(nome) !== index));
-    const primeiroEscalonamento = linhas.findIndex(linha => extrairEscalonamentoSemSucesso(linha));
-    let prefixo = linhas.slice(0, primeiroEscalonamento).join(' ').replace(/[:.;\s]+$/g, '');
-
-    if (!prefixo) {
-        prefixo = 'TENTATIVA DE ESCALONAMENTO SEM SUCESSO';
-    }
-    if (!/\bCOM$/i.test(prefixo)) {
-        prefixo += ' COM';
-    }
-
-    const partes = escalonamentos
-        .map(item => {
-            const nome = simplificarNome(item.nomes, nomesRepetidos);
-            return nome ? `${item.cargo} ${nome}` : '';
-        })
-        .filter(Boolean);
-
-    if (partes.length === 0) {
-        return removerPontoFinal(textoSemTelefones);
-    }
-    if (partes.length === 1) {
-        return `${prefixo} ${partes[0]}`;
-    }
-
-    return `${prefixo} ${partes.slice(0, -1).join('; ')} E ${partes[partes.length - 1]}`;
 }
 
 /**
