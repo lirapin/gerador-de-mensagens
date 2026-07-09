@@ -19,7 +19,14 @@ function removerPontoFinal(texto) {
 }
 
 function removerTelefones(texto) {
-    return texto.replace(/\+?\d[\d\s().-]{7,}\d/g, '').replace(/[ \t]+$/gm, '').trim();
+    // Remove a palavra "telefone" (case-insensitive) e quaisquer espacos/pontuacoes logo apos ela
+    let semPalavraTelefone = texto.replace(/\btelefone\b[\s:.-]*/gi, '');
+    
+    // Remove os números de telefone
+    let semNumeros = semPalavraTelefone.replace(/\+?\(?\d[\d\s().-]{6,}\d\)?/g, '');
+    
+    // Remove espaços múltiplos e limpa pontuações órfãs resultantes
+    return semNumeros.replace(/\s+/g, ' ').replace(/\s+[:.-]\s+/g, ' ').replace(/[ \t]+$/gm, '').trim();
 }
 
 function simplificarNome(nomes, nomesRepetidos) {
