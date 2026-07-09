@@ -19,8 +19,11 @@ function removerPontoFinal(texto) {
 }
 
 function removerTelefones(texto) {
-    // Remove a palavra "telefone" (case-insensitive) e quaisquer espacos/pontuacoes logo apos ela
-    let semPalavraTelefone = texto.replace(/\btelefone\b[\s:.-]*/gi, '');
+    // Remove preposições comuns + a palavra telefone (ex: 'no telefone:', 'pelo telefone -', 'do telefone')
+    let semPalavraTelefone = texto.replace(/\b(?:no|do|pelo|ao)\s+telefone\b[\s:.-]*/gi, '');
+    
+    // Fallback para se sobrar a palavra 'telefone' sozinha
+    semPalavraTelefone = semPalavraTelefone.replace(/\btelefone\b[\s:.-]*/gi, '');
     
     // Remove os números de telefone
     let semNumeros = semPalavraTelefone.replace(/\+?\(?\d[\d\s().-]{6,}\d\)?/g, '');
