@@ -129,17 +129,11 @@ async function gerarMensagem() {
         return;
     }
 
-    const tipoImpactoElement = document.querySelector('input[name="tipoImpacto"]:checked');
-    if (!tipoImpactoElement) {
-        alert('Por favor, selecione se o incidente tem impacto ou não');
-        return;
-    }
-
     const impactoValor = document.getElementById('impacto').value;
     Validators.verificarEscalonamento(topologia, impactoValor, tipoStatus);
 
     // Validar campos de data/hora
-    const camposDataHora = ['abertura', 'previsao', 'acionamento'];
+    const camposDataHora = ['abertura', 'acionamento'];
     if (tipoStatus === 'encerramento') {
         camposDataHora.push('encerramento');
     }
@@ -150,31 +144,25 @@ async function gerarMensagem() {
     }
 
     const get = id => document.getElementById(id)?.value.toUpperCase() || '';
-    const tipoImpactoTexto = tipoImpactoElement.value === 'com' ? 'COM IMPACTO' : 'SEM IMPACTO';
     const alertaImpacto = Validators.verificarAlertaImpacto(topologia, impactoValor);
 
-    let msg = `## COP REDE INFORMA: INCIDENTE ${tipoImpactoTexto}
-## ROMPIMENTO DE FIBRA RESIDENCIAL\n`;
+    let msg = `## COP REDE INFORMA: ROMPIMENTO DE FIBRA RESIDENCIAL\n`;
     msg += `## TOPOLOGIA: ${get('topologia')}\n`;
     msg += `## INCIDENTE: ${get('incidente')}\n`;
     msg += `## CIDADE/CLUSTER: ${get('cidade')}\n`;
     msg += `## ÁREA/DISTRITO: ${get('distrito')}\n`;
     msg += `## IMPACTO: ${get('impacto')}${alertaImpacto}\n`;
-    msg += `## BASE AFETADA: ${get('base')}\n`;
-
-    const recValue = parseInt(get('rec'));
-    const ralValue = parseInt(get('ral'));
-    if (!isNaN(recValue) && recValue >= 1) {
-        msg += `## REC: ${recValue}\n`;
+    
+    // Regra da base afetada: se vazia ou 0, exibir "EM ANÁLISE"
+    let baseValor = get('base');
+    if (!baseValor || baseValor.trim() === '' || /^0+$/.test(baseValor.trim())) {
+        baseValor = 'EM ANÁLISE';
     }
-    if (!isNaN(ralValue) && ralValue >= 1) {
-        msg += `## RAL: ${ralValue}\n`;
-    }
+    msg += `## BASE AFETADA: ${baseValor}\n`;
 
     msg += `## DATA E HORA DE ABERTURA: ${get('abertura')}\n`;
-    msg += `## PREVISÃO DO OUTAGE: ${get('previsao')}\n`;
     msg += `## DATA E HORA DE ACIONAMENTO: ${get('acionamento') || 'AGUARDANDO DISPONIBILIDADE TÉCNICA'}\n`;
-    msg += `## TIPO DE STATUS: ${document.getElementById('status').options[document.getElementById('status').selectedIndex].text.toUpperCase()}\n`;
+    msg += `## STATUS: ${document.getElementById('status').options[document.getElementById('status').selectedIndex].text.toUpperCase()}\n`;
 
     if (tipoStatus === 'inicial') {
         msg += gerarConteudoStatusInicial();

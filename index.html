@@ -56,20 +56,6 @@
         <div id="formRompimento" class="card hidden">
             <h2><span class="status-indicator status-active"></span> Rompimento de fibra residencial</h2>
 
-            <div class="form-group inline-radio">
-                <label>Tipo de incidente:</label>
-                <div class="radio-group inline impact-radio-group">
-                    <div class="radio-option">
-                        <input type="radio" id="impacto_com" name="tipoImpacto" value="com">
-                        <label for="impacto_com">Com impacto</label>
-                    </div>
-                    <div class="radio-option">
-                        <input type="radio" id="impacto_sem" name="tipoImpacto" value="sem">
-                        <label for="impacto_sem">Sem impacto</label>
-                    </div>
-                </div>
-            </div>
-
             <div class="form-row">
                 <div class="form-group">
                     <label for="topologia">Topologia:</label>
@@ -112,38 +98,20 @@
 
             <div class="form-row">
                 <div class="form-group">
-                    <label for="rec">REC:</label>
-                    <input type="text" id="rec" oninput="Validators.validarCampoNumerico(this)">
-                </div>
-
-                <div class="form-group">
-                    <label for="ral">RAL:</label>
-                    <input type="text" id="ral" oninput="Validators.validarCampoNumerico(this)">
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
                     <label for="abertura">Data e hora de abertura:</label>
                     <input type="text" id="abertura" placeholder="dd/mm/aaaa hh:mm">
                     <div class="error-message" id="abertura-error">Formato incorreto. Use: dd/mm/aaaa hh:mm</div>
                 </div>
 
                 <div class="form-group">
-                    <label for="previsao">Previsão do outage:</label>
-                    <input type="text" id="previsao" placeholder="dd/mm/aaaa hh:mm">
-                    <div class="error-message" id="previsao-error">Formato incorreto. Use: dd/mm/aaaa hh:mm</div>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
                     <label for="acionamento">Data e hora de acionamento:</label>
                     <input type="text" id="acionamento" placeholder="dd/mm/aaaa hh:mm">
                     <div class="date-format">Se vazio, será 'Aguardando disponibilidade técnica'</div>
                     <div class="error-message" id="acionamento-error">Formato incorreto. Use: dd/mm/aaaa hh:mm</div>
                 </div>
+            </div>
 
+            <div class="form-row">
                 <div class="form-group">
                     <label for="status">Tipo de status:</label>
                     <select id="status" onchange="atualizarCamposStatus()">

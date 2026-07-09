@@ -177,10 +177,7 @@ function carregarDadosRompimento(dados) {
     document.getElementById('distrito').value = dados.distrito || '';
     document.getElementById('impacto').value = dados.impacto || '';
     document.getElementById('base').value = dados.base || '';
-    document.getElementById('rec').value = dados.rec || '';
-    document.getElementById('ral').value = dados.ral || '';
     document.getElementById('abertura').value = dados.abertura || '';
-    document.getElementById('previsao').value = dados.previsao || '';
     document.getElementById('acionamento').value = dados.acionamento || '';
 }
 
@@ -327,10 +324,7 @@ function coletarDadosFormulario(tipo) {
             distrito: document.getElementById('distrito').value,
             impacto: document.getElementById('impacto').value,
             base: document.getElementById('base').value,
-            rec: document.getElementById('rec').value,
-            ral: document.getElementById('ral').value,
             abertura: document.getElementById('abertura').value,
-            previsao: document.getElementById('previsao').value,
             acionamento: document.getElementById('acionamento').value
         };
     } else if (tipo === 'manobra') {
@@ -367,10 +361,7 @@ function limparFormularios() {
     document.getElementById('distrito').value = '';
     document.getElementById('impacto').value = '';
     document.getElementById('base').value = '';
-    document.getElementById('rec').value = '';
-    document.getElementById('ral').value = '';
     document.getElementById('abertura').value = '';
-    document.getElementById('previsao').value = '';
     document.getElementById('acionamento').value = '';
     document.getElementById('status').value = '';
     document.getElementById('statusCampos').innerHTML = '';
